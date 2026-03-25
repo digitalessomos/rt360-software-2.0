@@ -1,0 +1,67 @@
+
+
+------------------------------------- ------------------------------------- -------------------------------------
+------------------------------------- ------------------------------------- -------------------------------------
+------------------------------------- ------------------------------------- -------------------------------------
+🍔 Edición "Hamburgueserías: Alto Flow y Despacho"------------------------------------- -------------------------------------
+------------------------------------- -------------------------------------  -------------------------------------
+------------------------------------- ------------------------------------- -------------------------------------
+------------------------------------- ------------------------------------- -------------------------------------
+ 
+1. El Gancho (El estrés de la Hora Pico): "Hola [Nombre]! Te hago una consulta para este finde: 
+¿Cómo manejás hoy el mostrador cuando te caen 30 pedidos en 15 minutos y tus repartidores tienen que salir a cubrir radios de hasta 6 kilómetros? 📈"
+
+2. La Revelación (El pulmón de tu logística): "En una hamburguesería de alto volumen, el cuello de botella siempre es el despacho. 
+Desarrollé RutaTotal 360 para que dejes de gestionar a ciegas en plena hora pico.
+
+Es una Consola de Control digital donde vinculás cada combo al repartidor en un segundo. 
+Tenés seguridad total de qué salió y, al retornar, la rendición de tickets es instantánea. Nada de perder tiempo contando papeles al final del turno. Mirá en este video de 1 minuto cómo despejamos tu mostrador: 👉 [Enlace al Video Before/After]"
+
+3. El Cierre (Lógica de ROI y CTA): "Una sola mala reseña por un pedido demorado o equivocado cuesta más que el sistema. 
+RutaTotal profesionaliza tu salida y se paga solo.
+
+Hagamos el setup este martes o miércoles en 10 minutos. Así, el próximo fin de semana operás con control absoluto. ¿Te interesa?
+
+Más información en: https://rutatotal360.netlify.app/"
+
+
+---------------💡 Puntos Clave de esta versión:---------------------
+Hora Pico: Atacamos el momento de mayor estrés del dueño.
+Seguridad Instantánea: Resaltamos que la app le quita la "ceguera" operativa.
+Rendición Veloz: Apuntamos al cansancio del cierre del turno (querer irse rápido sin errores en los números).
+------------------------------------- -------------------------------------
+
+
+
+------------------------------------- ------------------------------------- -------------------------------------
+------------------------------------- ------------------------------------- -------------------------------------
+------------------------------------- ------------------------------------- -------------------------------------
+🍔 Edición "Hamburgueserías: Alto Flow y Despacho"------------------------------------- -------------------------------------
+------------------------------------- -------------------------------------  -------------------------------------
+------------------------------------- ------------------------------------- -------------------------------------
+------------------------------------- ------------------------------------- -------------------------------------
+
+
+
+
+
+
+
+------------------------------------- ------------------------------------- -------------------------------------
+
+Para las Hamburgueserías, el dolor no es tanto la distancia (como en el sushi) ni solo el ruteo (como en la pizzería), sino el volumen masivo y la velocidad de despacho en horas pico. Son locales de "alto flow" donde un cuello de botella en el mostrador mata la rentabilidad.
+
+Aquí tenés los Mandamientos que mejor encajan para este nicho:
+
+🍔 Selección Hamburguesería: Flow y Despacho Quirúrgico
+Mandamiento 9: Encontrarás cualquier pedido en un segundo (Velocidad)
+Por qué: En una hamburguesería, los pedidos suelen tener muchos "modificadores" (sin cebolla, extra cheddar, etc.). Si un cliente reclama, el personal no tiene tiempo de revisar una pila de tickets. El buscador por ID es vital para dar una respuesta inmediata.
+Mandamiento 7: Bloquearás el error - Un pedido, un viaje (Estandarización)
+Por qué: Al manejar tanto volumen, es común que un repartidor se lleve una bolsa que "parecía" la suya. La app bloquea esto al vincular digitalmente el ID, evitando que el 'Cheddar' de uno termine en la casa de otro.
+Mandamiento 8: Darás respuestas de líder al cliente (Reputación)
+Por qué: Las hamburgueserías viven de las reseñas de Google/Rappi. Un cliente que no sabe dónde está su burger es un cliente que pone 1 estrella. RutaTotal te da la autoridad para decir: "Tu combo ya fue asignado y está en camino".
+Mandamiento 4: No contarás tickets a la 1 AM (Eficiencia)
+Por qué: Después de una noche de 100 o 200 hamburguesas, nadie quiere estar contando papeles manchados. La liquidación debe ser digital y al instante.
+Mandamiento 10: Suprimirás la mentira (Control de Flujo)
+Por qué: Permite saber si un pedido está "estancado" en el mostrador o si el repartidor realmente salió cuando dijo que salió. Es la única forma de optimizar el dispatch real.
+------------------------------------- ------------------------------------- -------------------------------------

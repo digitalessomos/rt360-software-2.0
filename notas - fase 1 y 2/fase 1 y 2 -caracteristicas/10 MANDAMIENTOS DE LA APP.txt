@@ -1,0 +1,110 @@
+MANDAMIENTO 1 - NO PREGUNTARAS MAS POR EL ESTADO DE UN PEDIDO  en la relacion pedido-delivery
+
+• Antes: Una encargada/ personal de mostrador(Quien toma los pedidos e imprime el ticket maestro el cual sera entregado al delivery quien debere traerlo de regreso al local para confirmar su entrega)
+le pregunta luego de una o dos horas a un delivery: "Tu te llevaste x pedido?"o "te llevaste el pedido de x calle?, entonces el delivery en ese lapso puede haber hecho 5 o 10 pedidos mas y puede
+no recordar con exactitud si ha llevado ese pedido. Se crea un clima de duda y desconfianza, y el delivery entra sin necesidad alguna en una zona de juicio cuando comunmente el ya ha
+entregado todos sus pedidos que le fueron asignados.
+• Después: la encargada/ personal de mostrador mira una interfaz digital limpia donde claramente identificas los pedidos que ha llevado ese delivery, ese tipo de preguntas quedan eliminadas. Paz mental
+para todos.
+
+MANDAMIENTO 2 - NO USARAS MAS LAPICERA  escribiendo tanto pora asignar como para confirmar
+• Antes: el personal anota, en un escaso espacio,los numero de ticket que se llevara cada repartidor y luego anota de nuevo cuando retorna el repartidor con esos mismos tickets.
+• Después: con un simple arrastre el ticket/pedido (digamos digital) queda asignado al repartidor, y otro simple click cuando ya ese ticket es liberado/entregado
+
+MANDAMIENTO 3 -  NO USARAS MAS PAPEL
+• Antes: EL personal debe de entregar cada ticket a cada repartidor el cual debe de retornar cada ticket para la confirmaciond e entrega. 
+• Después (La auditoria ):  Cero tickets viajando. Cada ticket queda trazado en el monitor. mucho ahorro de tiempo entre la interaccion de empleado-delivery
+
+
+MANDAMIENTO 4 -  NO CONTARAS MAS CUANTOS PEDIDOS HA HECHO CADA DELIVERY
+• Antes: la encargada contando ticket por ticket, arrugados, rotos, aveces se pierden y debe reimprimirlos luego de averiguar quien lo llevo. 
+• Después: Reportes con los datos de cuantos pedidos ha hjecho cada delivery, tablas propias de cada delivery.
+
+MANDAMIENTO 5 -  NO PERDERAS MAS DINERO
+• Antes:  Tickets extraviados por x razon  (no sea anotaron en el apuro, se olvidan, los deliveries lo pierden)
+• Después: trazavilidad absoluta de cada ticket para que ninguno se pierda. 
+
+MANDAMIENTO 6 -  SIEMPRE SABRAS QUE PEDIDOS LLEVO TUS DELIVERIES
+• Antes:  Juan por donde andas? Vos te llevaste x pedido?
+• Después:  Ya sea en viaje (estado delivery) y al final del turno sabras cuantos pedidos hizo cada delivery y en que momento
+
+MANDAMIENTO 7 -  NO SE LLEVARA DOS VECES EL MISMO PEDIDO, JAMAS
+• Antes:  Errores de duplicados eran llevados
+• Después: Cada ticket queda registrado evitando el origen de otro igual. 
+
+MANDAMIENTO 8 -  SIEMPRE TENDRAS UNA RESPUESTAS OBJETIVA SOBRE EL PEDIDO PARA EL CLIENTE
+• Antes: Cliente llama preguntando por su pedido, se le respondia con dudas y con tardazas, interfiriendo en otras tareas del personal.  
+• Después:  Si el cliente llama, sabras que responder.
+
+MANDAMIENTO 9 -  SIEMPRE TENDRAS LA UBICACION EXTACTA DE CADA PEDIDO
+• Antes: Se buscaba ticket por ticket- 
+• Después:  buscador de tickets, ubicacion mega rapido y exacta
+
+MANDAMIENTO 10 - NO SE MENTIRA MAS SOBRE UN PEDIDO, NI PERSONAL NI DELIVERY
+• Antes: En la hora pico, en el apuro (el personal del local, debe atender a los clientes que van a comer al local, que van a comprar al local,
+atender los pedidos por numnero de linea telefonica que son dos, atender los pedidos de whatsapp y atender a los pedidos de otras apps como pedido ya)  
+muchas veces no se anota por apuro, olvido o aproposito, y tanto el personal como tambien el deliverypueden mentir sobre el conocimiento de esos pedidos que no se hayan anotado.
+• Después: El apuro ya no existe gracias a esta torre de control asi que la mentira queda suprimida para siempre. 
+------------------------
+
+
+
+------------------------ ------------------------
+
+REFERENCIAS EXTRA DE LOS MANDAMIENTOS
+
+------------------------------------------------
+
+
+1. Registro y Vinculación de Pedidos
+• Antes: El personal de mostrador debe anotar manualmente cada pedido en una lista de papel, corriendo el riesgo de cometer errores de transcripción, duplicar números o perder tickets en el apuro del envoltorio.
+• Después: El sistema vincula automáticamente el ID del pedido al ingresar, eliminando la necesidad de usar lapicera. Resultado: "Cero errores de anotación".
+
+
+2. Gestión de Despacho y Armado de Rutas
+• Antes: El personal de mostrador tiene que acercarse físicamente a los repartidores para mostrarles los tickets uno por uno, buscando coordinar quién lleva qué según el orden de llegada y la ruta de entrega.
+• Después: Una "Torre de Control" visual donde el personal asigna pedidos con un clic o Drag-and-Drop. El monitor actúa como "Director de Orquesta", permitiendo que todos vean la secuencia de salida sin necesidad de mostrar papeles físicamente.
+
+
+---------------------------
+3. Incertidumbre del Recorrido
+• Antes: Una vez que el repartidor sale con los tickets, el local pierde visibilidad total. Si un cliente llama, el personal no sabe con certeza hace cuánto tiempo salió el pedido ni quién lo tiene exactamente hasta que el repartidor regresa.
+• Después: "Trazabilidad 360". El monitor muestra el tiempo exacto que cada pedido lleva en la calle y el nombre del responsable asignado. Resultado: "Verdad absoluta en tiempo real".
+
+3. Seguimiento y Trazabilidad en Tiempo Real
+• Antes: Incertidumbre total. El dueño o encargado mira el reloj con estrés y envía audios de WhatsApp preguntando "¿Por dónde vas?" porque un cliente enojado está al teléfono.
+• Después: El monitor muestra la "Verdad Absoluta". La encargada visualiza exactamente cuánto tiempo lleva cada pedido en la calle (ej. "12 minutos en viaje") sin necesidad de llamar a nadie
+
+-------------------------
+4. El Retorno y el "Check" de Entrega
+• Antes: Al volver, el repartidor debe entregar el ticket físico y el personal de mostrador debe buscarlo en su planilla para marcar el "check" manualmente, confirmando que el pedido llegó a destino.
+• Después: El encargado simplemente hace un clic en "Finalizar" en la consola. El bloque cambia instantáneamente a Verde Claro (Éxito), cerrando el ciclo de forma digital y liberando al repartidor para la próxima tanda.
+
+
+-----------------------------
+5. Auditoría y Cierre de Jornada
+• Antes: Al final del turno, el dueño o encargado debe contar los "checks" en los papeles, sumar tickets y usar una calculadora para cuadrar la caja, proceso que suele llevar mucho tiempo y es propenso a errores humanos.
+• Después: Acceso inmediato al Centro de Reportes. El sistema genera automáticamente el resumen de entregas por repartidor y el total del turno. Resultado: "Cierres de turno en 30 segundos"
+
+5. Auditoría y Cierre de Turno
+• Antes: "La pesadilla de la 1 AM". El dueño se queda de madrugada con una calculadora, cuadernos y tickets arrugados tratando de cuadrar la caja y entender por qué faltan pedidos.
+• Después: El dueño cierra la notebook con una sonrisa tras revisar el Centro de Reportes. Resultado: "Cierres de turno en 30 segundos" con gráficos claros de desempeño
+
+-----------------------
+
+6. Gestión de Tickets y Documentación
+• Antes: Una encargada estresada buscando un ticket específico entre montañas de papeles o cuadernos manchados de grasa. Existe el riesgo constante de anotar mal, 
+repetir números o simplemente olvidar el registro del ticket.
+• Después: El uso de una interfaz digital limpia donde, con un solo clic, se accede al historial completo. Resultado: "Cero tickets perdidos"
+
+
+-----------------------
+TENER EN CUENTA QUE en el modo actual sin la app:
+El ticket es la copia original primera impresa del pedido recien tomado por otro sistema de toma de pedidos donde queda registado el origen de cada ticket por si es necesaRIO
+reimprimirlo, por eso es importante que el delivery retorne los tickets una vez termine su recorrido de pedidos para que el personal del local (encargada y personal de mostrador)
+confirme que ya han sido entregados.
+
+ 
+
+
+

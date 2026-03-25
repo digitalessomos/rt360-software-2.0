@@ -1,0 +1,14 @@
+# Firebase & Secrets
+.env
+src/config/firebase.config.js
+
+# Dependencies
+node_modules/
+
+# VS Code & OS
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Vercel
+.vercel/

@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comandante de Salida - RT360</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0b10;
+            --card-bg: #15171f;
+            --accent-primary: #00f2ff;
+            --accent-secondary: #7000ff;
+            --accent-bot: #ff8000;
+            --text-main: #e0e0e0;
+            --text-dim: #a0a0a0;
+            --success: #00ff88;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(112, 0, 255, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(0, 242, 255, 0.05) 0%, transparent 40%);
+        }
+
+        header {
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            background: rgba(10, 11, 16, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .bot-title {
+            color: var(--accent-bot);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-weight: 800;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+            padding: 0 1rem;
+        }
+
+        .panel {
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: var(--accent-primary);
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Active Pitch Section */
+        .active-pitch-card {
+            background: rgba(255, 128, 0, 0.03);
+            border: 1px solid rgba(255, 128, 0, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .pitch-preview {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            line-height: 1.4;
+        }
+
+        /* Bot Console */
+        .bot-console {
+            background: #050608;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--success);
+            min-height: 150px;
+            border: 1px solid rgba(0, 255, 136, 0.1);
+            position: relative;
+        }
+
+        .console-line { margin-bottom: 5px; opacity: 0; animation: fadeIn 0.3s forwards; }
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        /* Leads List */
+        .leads-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .load-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .load-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--accent-primary); }
+
+        .leads-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .lead-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 1.2rem;
+            transition: 0.3s;
+        }
+
+        .lead-card:hover {
+            border-color: var(--accent-bot);
+            transform: translateY(-5px);
+            background: rgba(255, 128, 0, 0.05);
+        }
+
+        .lead-name { font-weight: 800; font-size: 1rem; margin-bottom: 5px; }
+        .lead-info { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 1rem; }
+        
+        .action-send {
+            width: 100%;
+            background: var(--accent-bot);
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        .action-send:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(255, 128, 0, 0.3); }
+        .action-send:disabled { background: #333; cursor: not-allowed; }
+
+        .status-badge {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.05);
+            float: right;
+        }
+
+        @media (max-width: 900px) {
+            .container { grid-template-columns: 1fr; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="bot-title">
+            <span>🤖</span> COMANDANTE DE SALIDA RT360
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="panel">
+            <div>
+                <h3><span>📡</span> Pitch Activo</h3>
+                <div id="pitchCard" class="active-pitch-card">
+                    <p style="color: var(--text-dim); font-size: 0.8rem; text-align: center;">Esperando señal de Sales Builder...</p>
+                </div>
+            </div>
+
+            <div>
+                <h3><span>🧠</span> Consola del Bot</h3>
+                <div id="botConsole" class="bot-console">
+                    <div class="console-line">> System Initialized...</div>
+                    <div class="console-line">> Comandante RT360 ONLINE.</div>
+                    <div class="console-line">> PASO 1: Genera un pitch en 'sales-builder.html' y presiona 'ENVIAR AL BOT'.</div>
+                    <div class="console-line">> PASO 2: Carga tu lista de locales (.txt) con el formato: Nombre | Celular | Nicho.</div>
+                    <div class="console-line">> PASO 3: Haz clic en 'ENVIAR PITCH' para abrir el WhatsApp personalizado de ese local.</div>
+                </div>
+            </div>
+            
+            <p style="font-size: 0.7rem; color: var(--text-dim); line-height: 1.4;">
+                Nota: Este bot procesa los pitches generados y te ayuda a enviarlos de forma personalizada a cada local de tu lista.
+            </p>
+        </div>
+
+        <!-- Main Area -->
+        <div class="panel">
+            <div class="leads-header">
+                <h3><span>📋</span> Base de Datos de Prospectos</h3>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <select id="deliveryFilter" class="load-btn" style="background: var(--card-bg); padding: 4px 8px;" onchange="if(leads.length > 0) loadPizzerias()">
+                        <option value="all">Filtrar: Todos</option>
+                        <option value="+5">> 5 Deliveries</option>
+                        <option value="-5">< 5 Deliveries</option>
+                    </select>
+                    <button class="load-btn" onclick="loadPizzerias()" style="border-color: #ff9f43; color: #ff9f43;">🍕 PIZZERÍAS</button>
+                    <button class="load-btn" onclick="triggerFileUpload()">📁 CARGAR TXT</button>
+                    <a href="outreach-kanban.html" class="load-btn" style="border-color: #00f2ff; color: #00f2ff; text-decoration: none;">📊 KANBAN OUTREACH</a>
+                </div>
+                <input type="file" id="fileInput" style="display: none;" accept=".txt" onchange="loadLeadsFromFile(event)">
+            </div>
+
+            <div id="leadsGrid" class="leads-grid">
+                <!-- Leads will be injected here -->
+                <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-dim);">
+                    <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">📂</span>
+                    <p>No hay locales cargados.<br>Haz clic en "CARGAR TXT DE LOCALES" para comenzar.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let leads = [];
+        let activePitch = null;
+
+        const PRESET_DATA = {
+            pizzerias: [
+                { name: "Empanadas Mi Gusto", phone: "+54 11 4754-0278", niche: "Pizzería", city: "San Martín", deliveries: "+5" },
+                { name: "Empanadas Mi Gusto", phone: "+54 11 4503-4318", niche: "Pizzería", city: "Villa Devoto", deliveries: "+5" },
+                { name: "Empanadas Mi Gusto", phone: "+54 11 4687-1697", niche: "Pizzería", city: "Mataderos", deliveries: "+5" },
+                { name: "Empanadas Mi Gusto", phone: "+54 11 4641-4001", niche: "Pizzería", city: "Villa Luro", deliveries: "+5" },
+                { name: "Gli Amici", phone: "+54 11 3750-5949", niche: "Pizzeria", city: "Ramos Mejía", deliveries: "-5" },
+                { name: "Domenico Pizza", phone: "+54 11 4658-2309", niche: "Pizzeria", city: "Ramos Mejía", deliveries: "-5" },
+                { name: "Santino", phone: "+54 9 11 2429-9577", niche: "Pizzeria", city: "Villa Bosch", deliveries: "-5" },
+                { name: "Pizzería El Barba", phone: "+54 11 4639-6278", niche: "Pizzeria", city: "Monte Castro", deliveries: "-5" },
+                { name: "Pizzería Il Ritorno", phone: "+54 11 4648-1212", niche: "Pizzeria", city: "Monte Castro", deliveries: "-5" }
+            ]
+        };
+
+        function loadPizzerias() {
+            const filterValue = document.getElementById('deliveryFilter').value;
+            let filteredData = PRESET_DATA.pizzerias;
+            
+            if (filterValue !== 'all') {
+                filteredData = filteredData.filter(item => item.deliveries === filterValue);
+            }
+
+            leads = filteredData.map((item, index) => ({
+                id: index,
+                name: item.name,
+                phone: item.phone,
+                whatsapp: item.phone.replace(/\D/g, ''),
+                niche: item.niche,
+                city: item.city,
+                deliveries: item.deliveries,
+                status: 'pendiente'
+            }));
+            
+            renderLeads();
+            logToConsole(`> Filtro aplicado: ${filterValue === 'all' ? 'Todos' : (filterValue === '+5' ? '> 5 deliveries' : '< 5 deliveries')}.`);
+            logToConsole(`> Mostrando ${leads.length} locales.`);
+        }
+
+        // Listen for localStorage changes
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'rt360_active_pitch') {
+                loadActivePitch();
+            }
+        });
+
+        function loadActivePitch() {
+            const data = localStorage.getItem('rt360_active_pitch');
+            if (data) {
+                activePitch = JSON.parse(data);
+                const card = document.getElementById('pitchCard');
+                const isFollowUp = activePitch.isFollowUp || activePitch.niche === 'seguimiento';
+                
+                card.innerHTML = `
+                    <div style="margin-bottom: 10px; display: flex; justify-content: space-between;">
+                        <span class="chip" style="background: rgba(${isFollowUp ? '0,255,136' : '0,242,255'},0.1); color: ${isFollowUp ? 'var(--success)' : 'var(--accent-primary)'}; font-size: 0.6rem; padding: 2px 6px; border-radius: 4px;">
+                            ${isFollowUp ? '🏁 SEGUIMIENTO' : 'NICHO: ' + activePitch.niche.toUpperCase()}
+                        </span>
+                        <span style="font-size: 0.6rem; color: var(--text-dim);">${new Date(activePitch.timestamp).toLocaleTimeString()}</span>
+                    </div>
+                    <div class="pitch-preview">${activePitch.text}</div>
+                `;
+                logToConsole(`> Recibido ${isFollowUp ? 'Guion de Seguimiento' : 'nuevo Pitch para ' + activePitch.niche}. Listo para despliegue.`);
+                updateSendButtons();
+                if (isFollowUp) renderLeads(); // Re-render to show follow-up context
+            }
+        }
+
+        function logToConsole(message) {
+            const console = document.getElementById('botConsole');
+            const line = document.createElement('div');
+            line.className = 'console-line';
+            line.innerText = message;
+            console.appendChild(line);
+            console.scrollTop = console.scrollHeight;
+        }
+
+        function triggerFileUpload() {
+            document.getElementById('fileInput').click();
+        }
+
+        function loadLeadsFromFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                const lines = content.split('\n');
+                
+                leads = lines.map((line, index) => {
+                    const cleanLine = line.trim();
+                    if (!cleanLine || !cleanLine.includes('|')) return null;
+                    
+                    const parts = cleanLine.split('|').map(p => p.trim());
+                    if (parts.length < 2) return null;
+                    
+                    // Clean Phone for WhatsApp (keep only numbers)
+                    const cleanPhone = parts[1].replace(/\D/g, '');
+
+                    return {
+                        id: index,
+                        name: parts[0],
+                        phone: parts[1], // original for display
+                        whatsapp: cleanPhone, // for the link
+                        niche: parts[2] || 'general',
+                        city: parts[3] || '',
+                        status: 'pendiente'
+                    };
+                }).filter(l => l !== null);
+
+                renderLeads();
+                logToConsole(`> Base de datos procesada: ${leads.length} prospectos válidos.`);
+                logToConsole(`> Limpieza de números completada para WhatsApp.`);
+            };
+            reader.readAsText(file);
+        }
+
+        function renderLeads() {
+            const grid = document.getElementById('leadsGrid');
+            if (leads.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Lista vacía.</p>';
+                return;
+            }
+
+            const isFollowUp = activePitch && (activePitch.isFollowUp || activePitch.niche === 'seguimiento');
+
+            grid.innerHTML = leads.map(lead => `
+                <div class="lead-card" id="lead-${lead.id}" style="${lead.status === 'enviado' && !isFollowUp ? 'opacity: 0.7;' : ''}">
+                    <span class="status-badge" id="status-${lead.id}" style="background: ${lead.status === 'enviado' ? 'rgba(0,255,136,0.1)' : 'rgba(255,255,255,0.05)'}; color: ${lead.status === 'enviado' ? 'var(--success)' : 'var(--text-dim)'}">${lead.status}</span>
+                    <div class="lead-name">${lead.name}</div>
+                    <div class="lead-info">
+                        📞 ${lead.phone} | 🏷️ ${lead.niche}<br>
+                        📍 ${lead.city} ${lead.deliveries ? `| 📦 ${lead.deliveries === '+5' ? '>5' : '<5'} Dely` : ''}
+                    </div>
+                    <button class="action-send" ${!activePitch ? 'disabled' : ''} onclick="personalizeAndSend(${lead.id})" style="background: ${isFollowUp ? 'var(--success)' : 'var(--accent-bot)'}; color: ${isFollowUp ? 'black' : 'white'}">
+                        <span>${isFollowUp ? '🎯 SEGUIMIENTO' : '🚀 ENVIAR PITCH'}</span>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function updateSendButtons() {
+            const buttons = document.querySelectorAll('.action-send');
+            buttons.forEach(btn => btn.disabled = false);
+        }
+
+        function personalizeAndSend(leadId) {
+            const lead = leads.find(l => l.id === leadId);
+            if (!lead || !activePitch) return;
+
+            // Personalize the name [Nombre] or [Nombre_Local] 
+            let personalizedText = activePitch.text
+                .replace(/\[Nombre\]/g, lead.name)
+                .replace(/\[Nombre_Local\]/g, lead.name);
+
+            logToConsole(`> Preparando ataque personalizado para ${lead.name}...`);
+            
+            // Simulation of sending
+            setTimeout(() => {
+                const encodedText = encodeURIComponent(personalizedText);
+                const wpUrl = `https://api.whatsapp.com/send?phone=${lead.whatsapp}&text=${encodedText}`;
+                
+                window.open(wpUrl, '_blank');
+                
+                lead.status = 'enviado';
+                document.getElementById(`status-${leadId}`).innerText = 'enviado';
+                document.getElementById(`status-${leadId}`).style.background = 'rgba(0,255,136,0.1)';
+                document.getElementById(`status-${leadId}`).style.color = 'var(--success)';
+                
+                logToConsole(`> Canal abierto con ${lead.name}. Verificación de envío pendiente.`);
+
+                // REGISTER CONTACT FOR KANBAN - Passing the full personalized text
+                registerContact(lead, personalizedText);
+            }, 300);
+        }
+
+        function registerContact(lead, fullMessage) {
+            // Check if already registered
+            let currentContacts = JSON.parse(localStorage.getItem('rt360_outreach_contacts') || '[]');
+            
+            const alreadyExists = currentContacts.find(c => c.phone === lead.phone);
+            if (alreadyExists) return;
+
+            const newContact = {
+                id: `ot_${Date.now()}`,
+                name: lead.name,
+                phone: lead.phone,
+                niche: lead.niche,
+                city: lead.city,
+                status: 'contacted',
+                timestamp: new Date().toISOString(),
+                trigger_message: fullMessage || '', // Store the message that triggered the contact
+                source: 'Comandante Outreach'
+            };
+
+            currentContacts.push(newContact);
+            localStorage.setItem('rt360_outreach_contacts', JSON.stringify(currentContacts));
+            logToConsole(`> Lead registrado en el Kanban de Outreach.`);
+        }
+
+        // Initial check
+        window.onload = () => {
+            loadActivePitch();
+        };
+    </script>
+</body>
+</html>

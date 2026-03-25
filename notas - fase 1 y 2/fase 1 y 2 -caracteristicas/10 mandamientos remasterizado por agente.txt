@@ -1,0 +1,54 @@
+📜 El Manifiesto de la Verdad Digital: Los 10 Mandamientos
+1. No preguntarás más por el estado de un pedido
+Antes: El mostrador es un nido de gritos. "¿Te llevaste el de la calle X?". El delivery, tras 10 viajes, no recuerda. Se crea desconfianza y el personal entra en una "zona de juicio" innecesaria.
+
+Después: La encargada mira una interfaz limpia. El pedido está amarrado al repartidor. La duda muere, nace la Paz Mental.
+
+2. Matarás la lapicera (Asignación sin esfuerzo)
+Antes: Espacio escaso, tickets manchados de grasa y una birome que no escribe. Anotar números a mano para asignar y volver a anotar para confirmar el regreso. Doble trabajo, cero eficiencia.
+
+Después: Un simple Drag-and-Drop. Arrastrás el pedido digital al repartidor y el sistema escribe por vos. Más rápido, más limpio, más profesional.
+
+3. Erradicarás el papel en el camino
+Antes: El personal entrega tickets físicos que vuelan, se mojan o se pierden. El local depende de que ese papelito vuelva sano para saber si se entregó.
+
+Después: Cero tickets viajando. La trazabilidad es total desde el monitor. Ahorro de tiempo masivo en la interacción empleado-delivery.
+
+4. No contarás tickets a la madrugada
+Antes: La encargada contando papeles arrugados y rotos a la 1 AM. Si falta uno, hay que investigar quién lo llevó o reimprimirlo. El cansancio lleva al error.
+
+Después: Reportes instantáneos. Una tabla propia para cada delivery con el conteo exacto. El cierre de turno pasa de 20 minutos a 30 segundos.
+
+5. No permitirás que el dinero se evapore
+Antes: Incertidumbre total sobre la rendición. Pedidos que se entregan pero "se olvidan" de cobrar o anotar en el caos del mostrador.
+
+Después: Conciliación Blindada. Cada ID que salió del local debe ser rendido. El sistema protege tu ganancia neta contra el olvido.
+
+6. Tendrás memoria infinita de cada viaje
+Antes: El delivery vuelve y dice: "Esto no me lo diste". Sin pruebas, el dueño pierde. El mostrador es una zona gris de palabras contra palabras.
+
+Después: Historial Inmutable. Registro exacto de qué llevó cada uno, a qué hora salió y a qué hora volvió. El sistema es el testigo que nunca miente.
+
+7. Bloquearás el error del doble envío
+Antes: En la hora pico, dos repartidores se llevan el mismo pedido por error. Comida desperdiciada, cliente confundido y pérdida de dinero real.
+
+Después: Validación Atómica. El sistema bloquea automáticamente cualquier intento de asignar un pedido que ya está en viaje. El error humano es imposible.
+
+8. Darás respuestas de Líder al cliente
+Antes: El cliente llama y vos respondés con dudas: "Ya debe estar por llegar". Esa incertidumbre destruye la reputación de tu negocio.
+
+Después: Verdad Absoluta. "Señor, su pedido salió hace 12 minutos con Juan". Esa precisión calma al cliente y te posiciona como una empresa de tecnología.
+
+9. Encontrarás cualquier pedido en un segundo
+Antes: Revolver una montaña de tickets físicos buscando el #45 mientras el teléfono no para de sonar. Estrés total.
+
+Después: Buscador de Rayo. Escribís el ID y el sistema te dice exactamente en qué columna está y quién lo tiene. Ubicación exacta al instante.
+
+10. Suprimirás la mentira (Control 360)
+Antes: El apuro de atender mostrador, teléfonos y apps lleva a no anotar "por olvido" o a propósito. La mentira se esconde en el desorden de la hora pico.
+
+Después: La Torre de Control elimina la excusa del apuro. Al ser tan fácil de usar, la transparencia es total y la mentira queda suprimida para siempre.
+
+🛡️Nota Técnica para el Agente de Código
+Para el Mandamiento 10, recordá recalcar que el sistema no reemplaza el "Ticket Maestro" del POS original, sino que lo digitaliza para la calle. 
+El ticket físico vuelve para confirmar, pero la información vive en RutaTotal.

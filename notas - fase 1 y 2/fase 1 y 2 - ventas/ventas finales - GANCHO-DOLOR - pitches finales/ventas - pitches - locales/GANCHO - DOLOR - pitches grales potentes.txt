@@ -1,0 +1,106 @@
+			GANCHO - DOLOR    
+
+- preguntar a gritos: '¿Quién se llevó la de Muzza del pedido 42?' a las 10 de la noche.
+(estás perdiendo dinero. En el caos del 'pico', El error humano no es un costo fijo; es una fuga que podemos sellar hoy mismo)
+
+-"Deja de gestionar incendios y empieza a liderar tu logística. Si tu cliente tiene que preguntarte '¿dónde está mi pedido?', ya has perdido dinero."
+
+-Paso 1: La Pregunta del Dolor (El Gancho)
+"¿Qué pasa hoy en tu local cuando un cliente llama enojado porque su pedido no llegó, 
+y vos o tu encargada tienen que gritarle al aire a los repartidores para saber quién se llevó la comida?" 
+
+-"Si tu encargado todavía tiene que preguntar a gritos: '¿Quién se llevó la de Muzza del pedido 42?' a las 10 de la noche, estás perdiendo dinero. 
+En el caos del 'pico', cada segundo de duda es una mesa que no se libera y un repartidor parado. El error humano no es un costo fijo; es una fuga que podemos sellar hoy mismo."
+
+
+- los viernes y domingos por la noche el mostrador se vuelve un desafío con 4 o 5 repartidores saliendo al mismo tiempo.
+
+- ¿Cuánta seguridad tenés hoy cuando un repartidor sale con 4 pedidos y regresa con los tickets correspondientes de su vuelta de pedidos? 📈
+
+- sentir que el éxito de tu pizzería depende de que la gente no se equivoque anotando en un papel
+
+- "¿Alguna vez sentiste que en el mostrador hay una zona gris donde los pedidos desaparecen y nadie se hace responsable?" 
+(Te mando este video de 10 segundos, decime si te sentís identificado.)
+( Aquí el enemigo no es el dueño ni el delivery, el enemigo es el SISTEMA DE PAPEL. Vos y el dueño son aliados contra el papel.)
+
+- "¿Alguna vez sentiste que el éxito de tu pizzería depende de que la gente no se equivoque anotando en un papel? El caos de las 10 PM no tiene por qué ser tu normalidad.
+
+
+
+	-elevator speech:
+¿Alguna vez sentiste que el éxito de tu pizzería depende de que la gente no se equivoque anotando en un papel? El caos de las 10 PM no tiene por qué ser tu normalidad. 
+
+Con RutaTotal 360, transformamos tu mostrador en una Torre de Control proactiva. 
+Eliminamos la lapicera y conectamos cada pedido a una columna vertebral de datos en tiempo real que te garantiza paz operativa y un ROI inmediato. 
+Menos gritos, más resultados.
+
+
+------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------
+
+
+Local,		Punto de Dolor Específico,					Tu Frase Ganadora
+Pizzería,	Salida masiva de pedidos iguales.,				"""Evitá que un repartidor se lleve la grande de muzzarella de otro cliente por error."""
+Sushi,		Sensibilidad al tiempo y delicadeza.,				"""Asegurá que el cliente reciba el salmón fresco, monitoreando el tiempo exacto de calle."""
+Hamburguesas,	"El caos de los ""aderezos"" y combos.",			"""Vinculá cada combo complejo a un ID único y eliminá la duda de '¿quién lleva el pedido 40?'"""
+Restaurante 	Familiar,Multitarea del encargado (atender salón + delivery).,	"""Liberá a tu encargada del teléfono. Si el cliente llama, ella mira la pantalla y da la respuesta en 3 segundos."""
+
+
+
+------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------
+
+
+
+------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------
+
+
+					Propuesta Técnica: Guiones de "Momento Ajá"
+
+A. Nicho: Pizzerías (Enfoque: Velocidad y Temperatura)
+"En el negocio de la pizza, el tiempo no es solo dinero, es calidad. Si tus repartidores se pierden o se amontonan, la masa llega fría y el cliente no vuelve. 
+Con [Volumen] unidades, Monitor de Pedidos te asegura que cada salida sea una ruta optimizada. ¿Listo para que tus pizzas lleguen siempre calientes?"
+
+B. Nicho: Sushi (Enfoque: Precisión y Delicadeza)
+"El sushi es arte y logística de precisión. Un minuto de más en la calle afecta la frescura que tanto cuidas en cocina. Para una operación de [Volumen] repartidores, 
+necesitas trazabilidad total. Evita que el cliente llame preguntando '¿dónde está mi pedido?'. ¿Te gustaría automatizar ese seguimiento?"
+
+C. Nicho: Hamburgueserías (Enfoque: Volumen y Hora Pico)
+"Tus 'horas pico' son brutales. Cuando caen 20 pedidos en 10 minutos, el caos en el mostrador se traslada a la calle. Con [Volumen] repartidores, 
+necesitas que el despacho sea quirúrgico para evitar cuellos de botella. Monitor de Pedidos es el pulmón que tu logística necesita. ¿Quieres ver cómo despejamos tu mostrador?"
+
+D. Nicho: Restaurante Tradicional / Otros (Enfoque: Control y Rentabilidad)
+"Gestionar el salón y el delivery al mismo tiempo es un desafío de malabarista. Con [Volumen] unidades, es fácil perder el control de los costos de envío y los tiempos de entrega. 
+Vamos a profesionalizar tu logística para que tú te enfoques en el sabor, no en el mapa. ¿Te enviamos la propuesta personalizada?"
+
+
+------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------
+
+
+ 				Manejo de Objeciones (Estilo Apple)
+
+Objeción A: "Es muy difícil de usar para mi equipo"
+Respuesta: "Diseñamos la interfaz bajo la premisa de la invisibilidad. Si saben usar un smartphone, 
+saben usar el Monitor de Pedidos. No requiere capacitación, requiere solo las ganas de dejar de trabajar de más."
+
+Objeción B: "Ahora mismo es un gasto que no puedo permitirme"
+Respuesta: "No es un gasto, es una recuperación de margen. Cada minuto que tu equipo pasa respondiendo 
+'dónde está mi pedido' es dinero que estás quemando. El software se paga solo al eliminar las ineficiencias que hoy estás ignorando."
+
+Objeción C: "Ya tengo un grupo de WhatsApp para eso"
+Respuesta: "WhatsApp es para conversar, no para gestionar. La información se entierra, los datos se pierden
+ y la escalabilidad muere. Monitor de Pedidos es el orden profesional que separa a los aficionados de las empresas serias."
+

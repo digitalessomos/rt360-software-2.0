@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Hub | RutaTotal 360</title>
+    <meta name="description" content="Panel central de herramientas de ventas del ecosistema RT360.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap');
+
+        :root {
+            --brand-emerald: #10b981;
+            --brand-slate: #020617;
+            --card-bg: rgba(30, 41, 59, 0.5);
+            --header-h: 64px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--brand-slate);
+            color: #f8fafc;
+            overflow: hidden;
+            /* SPA: no scroll on root */
+        }
+
+        /* ── Grid background ── */
+        #bg-grid {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(16, 185, 129, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px);
+            background-size: 48px 48px;
+        }
+
+        #bg-glow {
+            position: fixed;
+            top: -200px;
+            left: -200px;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.07) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── Glass ── */
+        .glass {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        /* ── Header ── */
+        #main-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-h);
+            z-index: 100;
+            background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+        }
+
+        #header-glow {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.4), rgba(16, 185, 129, 0.1), transparent);
+        }
+
+        /* ── Burger ── */
+        #burger-btn {
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            padding: 8px;
+        }
+
+        #burger-btn span {
+            display: block;
+            height: 2px;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+            background: #cbd5e1;
+        }
+
+        #burger-btn span:nth-child(1) {
+            width: 20px;
+        }
+
+        #burger-btn span:nth-child(2) {
+            width: 20px;
+        }
+
+        #burger-btn span:nth-child(3) {
+            width: 12px;
+            background: var(--brand-emerald);
+        }
+
+        #burger-btn.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        #burger-btn.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        #burger-btn.active span:nth-child(3) {
+            width: 20px;
+            transform: rotate(-45deg) translate(5px, -5px);
+            background: #cbd5e1;
+        }
+
+        /* ── Side Nav ── */
+        #side-nav {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 280px;
+            background: rgba(2, 6, 23, 0.98);
+            backdrop-filter: blur(24px);
+            border-left: 1px solid rgba(16, 185, 129, 0.12);
+            z-index: 200;
+            transform: translateX(100%);
+            transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        #side-nav.open {
+            transform: translateX(0);
+        }
+
+        #nav-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(3px);
+            z-index: 190;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.38s ease;
+        }
+
+        #nav-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 13px 24px;
+            color: #64748b;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            border-left: 3px solid transparent;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            background: none;
+            border-right: none;
+            border-top: none;
+            border-bottom: none;
+            width: 100%;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #fff;
+            background: rgba(16, 185, 129, 0.08);
+            border-left-color: var(--brand-emerald);
+        }
+
+        .nav-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        /* ── Content Area ── */
+        #content-area {
+            position: fixed;
+            top: var(--header-h);
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            z-index: 1;
+        }
+
+        /* ── Dashboard View ── */
+        #dashboard-view {
+            min-height: 100%;
+            padding: 40px 24px 60px;
+        }
+
+        /* ── Iframe View ── */
+        #iframe-view {
+            display: none;
+            position: absolute;
+            inset: 0;
+        }
+
+        #iframe-view.visible {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #tool-iframe {
+            flex: 1;
+            border: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ── Back Bar ── */
+        #back-bar {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-between;
+            gap: 12px;
+            padding: 10px 20px;
+            background: rgba(2, 6, 23, 0.95);
+            border-bottom: 1px solid rgba(16, 185, 129, 0.15);
+        }
+
+        #back-bar .tool-label {
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+        }
+
+        /* ── Tool Cards ── */
+        .tool-card {
+            cursor: pointer;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.6);
+        }
+
+        .card-icon {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .tool-card:hover .card-icon {
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        .card-arrow {
+            opacity: 0.35;
+            transition: all 0.25s ease;
+        }
+
+        .tool-card:hover .card-arrow {
+            opacity: 1;
+            transform: translateX(4px);
+        }
+
+        /* entry animation */
+        .tool-card {
+            opacity: 0;
+            transform: translateY(24px);
+            animation: fadeUp 0.45s ease forwards;
+        }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tool-card:nth-child(1) {
+            animation-delay: 0.04s;
+        }
+
+        .tool-card:nth-child(2) {
+            animation-delay: 0.11s;
+        }
+
+        .tool-card:nth-child(3) {
+            animation-delay: 0.18s;
+        }
+
+        .tool-card:nth-child(4) {
+            animation-delay: 0.25s;
+        }
+
+        .tool-card:nth-child(5) {
+            animation-delay: 0.32s;
+        }
+
+        .tag-badge {
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+
+        /* pulse */
+        .pulse-dot {
+            animation: pg 2s ease-in-out infinite;
+        }
+
+        @keyframes pg {
+
+            0%,
+            100% {
+                opacity: .5;
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+            }
+
+            50% {
+                opacity: 1;
+                box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+            }
+        }
+
+        /* Loading overlay for iframe */
+        #iframe-loader {
+            position: absolute;
+            inset: 0;
+            z-index: 5;
+            background: var(--brand-slate);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            transition: opacity 0.3s ease;
+        }
+
+        #iframe-loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.06);
+            border-top-color: var(--brand-emerald);
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="bg-grid"></div>
+    <div id="bg-glow"></div>
+
+    <!-- Nav Overlay -->
+    <div id="nav-overlay" onclick="closeNav()"></div>
+
+    <!-- ═══════════════════════ SIDE NAV ═══════════════════════ -->
+    <nav id="side-nav" aria-label="Menú de herramientas">
+        <div
+            style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid rgba(255,255,255,0.05);">
+            <div>
+                <p
+                    style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.2em;color:#10b981;margin:0;">
+                    RT360</p>
+                <p
+                    style="font-size:13px;font-weight:900;text-transform:uppercase;color:#fff;letter-spacing:-.01em;margin:2px 0 0;">
+                    Sales Hub</p>
+            </div>
+            <button onclick="closeNav()"
+                style="background:none;border:none;color:#475569;cursor:pointer;font-size:16px;padding:4px;"
+                aria-label="Cerrar menú">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div style="flex:1;overflow-y:auto;padding:12px 0;">
+            <p
+                style="padding:8px 24px 6px;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.15em;color:#334155;margin:0;">
+                Dashboard</p>
+            <button class="nav-link active" id="nav-hub" onclick="showDashboard()">
+                <span class="nav-icon" style="color:#10b981;"><i class="fas fa-th-large"></i></span>
+                Inicio / Hub
+            </button>
+
+            <p
+                style="padding:16px 24px 6px;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.15em;color:#334155;margin:0;">
+                Herramientas de Venta</p>
+            <button class="nav-link" id="nav-sales-builder" onclick="loadTool('sales-builder')">
+                <span class="nav-icon" style="color:#10b981;"><i class="fas fa-file-contract"></i></span>
+                Sales Builder
+            </button>
+            <button class="nav-link" id="nav-pitch-master" onclick="loadTool('pitch-master')">
+                <span class="nav-icon" style="color:#8b5cf6;"><i class="fas fa-bullhorn"></i></span>
+                Pitch Master
+            </button>
+
+            <button class="nav-link" id="nav-outreach-bot" onclick="loadTool('outreach-bot')">
+                <span class="nav-icon" style="color:#f59e0b;"><i class="fas fa-robot"></i></span>
+                Outreach Bot
+            </button>
+
+            <p
+                style="padding:16px 24px 6px;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.15em;color:#334155;margin:0;">
+                Sistema</p>
+            <button class="nav-link" id="nav-admin" onclick="loadTool('admin')">
+                <span class="nav-icon" style="color:#f43f5e;"><i class="fas fa-satellite-dish"></i></span>
+                Torre de Control
+            </button>
+            <button class="nav-link" id="nav-outreach-kanban" onclick="loadTool('outreach-kanban')">
+                <span class="nav-icon" style="color:#3b82f6;"><i class="fas fa-columns"></i></span>
+                Outreach Kanban
+            </button>
+        </div>
+
+        <div style="padding:16px 24px;border-top:1px solid rgba(255,255,255,0.04);">
+            <p
+                style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.15em;color:#1e293b;text-align:center;margin:0;">
+                RT360 · Sales Suite v2.0</p>
+        </div>
+    </nav>
+
+    <!-- ═══════════════════════ HEADER ═══════════════════════ -->
+    <header id="main-header">
+        <div style="display:flex;align-items:center;gap:14px;">
+            <div
+                style="width:38px;height:38px;background:#10b981;border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(16,185,129,0.35);">
+                <i class="fas fa-rocket" style="color:#020617;font-size:14px;"></i>
+            </div>
+            <div>
+                <p id="header-title"
+                    style="font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.2em;color:#10b981;margin:0;">
+                    Sales Hub</p>
+                <p id="header-subtitle"
+                    style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#334155;margin:0;">
+                    RutaTotal 360 · Suite Comercial</p>
+            </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:16px;">
+            <!-- Status pill -->
+            <div style="display:flex;align-items:center;gap:7px;" class="hidden sm:flex">
+                <span class="pulse-dot"
+                    style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#10b981;"></span>
+                <span
+                    style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:rgba(16,185,129,0.65);">Activo</span>
+            </div>
+
+            <!-- Breadcrumb back button (hidden when in dashboard) -->
+            <button id="header-back-btn" onclick="showDashboard()"
+                style="display:none;align-items:center;gap:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:6px 12px;color:#94a3b8;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;cursor:pointer;transition:all .2s ease;"
+                onmouseover="this.style.borderColor='rgba(16,185,129,0.4)';this.style.color='#fff';"
+                onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#94a3b8';">
+                <i class="fas fa-arrow-left" style="font-size:9px;"></i> Hub
+            </button>
+
+            <!-- Burger -->
+            <button id="burger-btn" onclick="toggleNav()" aria-label="Abrir menú">
+                <span></span><span></span><span style="width:12px;background:#10b981;"></span>
+            </button>
+        </div>
+        <div id="header-glow"></div>
+    </header>
+
+    <!-- ═══════════════════════ CONTENT AREA ═══════════════════════ -->
+    <div id="content-area">
+
+        <!-- ─── DASHBOARD VIEW ─── -->
+        <div id="dashboard-view">
+            <!-- Hero -->
+            <div style="max-width:1200px;margin:0 auto 32px;padding:0 4px;">
+                <span class="tag-badge"
+                    style="background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.2);">
+                    <i class="fas fa-layer-group" style="margin-right:4px;"></i> 5 Herramientas · SPA Mode
+                </span>
+                <h2
+                    style="font-size:clamp(28px,5vw,48px);font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:-.02em;margin:12px 0 6px;color:#fff;line-height:1.1;">
+                    Centro de <span style="color:#10b981;">Operaciones</span><br>Comerciales
+                </h2>
+                <p style="color:#64748b;font-size:13px;max-width:480px;line-height:1.7;margin:0;">
+                    Seleccioná una herramienta para abrirla directamente en este panel, sin abandonar el hub.
+                </p>
+            </div>
+
+            <!-- Cards Grid -->
+            <div
+                style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;">
+
+                <!-- Sales Builder -->
+                <div class="tool-card" onclick="loadTool('sales-builder')" id="card-sales-builder"
+                    style="--hover-color:rgba(16,185,129,0.35);"
+                    onmouseover="this.style.borderColor='rgba(16,185,129,0.35)';this.style.boxShadow='0 20px 60px -15px rgba(0,0,0,0.6),0 0 30px -10px rgba(16,185,129,0.12)';"
+                    onmouseout="this.style.borderColor='rgba(255,255,255,0.07)';this.style.boxShadow='';">
+                    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;">
+                        <div class="card-icon"
+                            style="width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;background:linear-gradient(135deg,rgba(16,185,129,0.2),rgba(16,185,129,0.04));border:1px solid rgba(16,185,129,0.25);">
+                            <i class="fas fa-file-contract" style="color:#10b981;"></i>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span class="tag-badge" style="background:rgba(16,185,129,0.1);color:#10b981;">Activo</span>
+                            <i class="fas fa-chevron-right card-arrow" style="color:#10b981;font-size:11px;"></i>
+                        </div>
+                    </div>
+                    <h3
+                        style="font-size:15px;font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:-.01em;color:#fff;margin:0 0 6px;">
+                        Sales Builder</h3>
+                    <p style="font-size:12px;color:#64748b;line-height:1.6;margin:0 0 20px;flex:1;">Construye propuestas
+                        personalizadas con planes, precios y cierres de alto impacto.</p>
+                    <div style="display:flex;gap:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.05);">
+                        <div>
+                            <p
+                                style="font-size:9px;color:#334155;font-weight:800;text-transform:uppercase;margin:0 0 2px;">
+                                Tipo</p>
+                            <p style="font-size:11px;color:#10b981;font-weight:900;margin:0;">Propuestas</p>
+                        </div>
+                        <div>
+                            <p
+                                style="font-size:9px;color:#334155;font-weight:800;text-transform:uppercase;margin:0 0 2px;">
+                                Uso</p>
+                            <p style="font-size:11px;color:#fff;font-weight:900;margin:0;">Cierre 1:1</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pitch Master -->
+                <div class="tool-card" onclick="loadTool('pitch-master')" id="card-pitch-master"
+                    onmouseover="this.style.borderColor='rgba(139,92,246,0.35)';this.style.boxShadow='0 20px 60px -15px rgba(0,0,0,0.6),0 0 30px -10px rgba(139,92,246,0.1)';"
+                    onmouseout="this.style.borderColor='rgba(255,255,255,0.07)';this.style.boxShadow='';">
+                    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;">
+                        <div class="card-icon"
+                            style="width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;background:linear-gradient(135deg,rgba(139,92,246,0.2),rgba(139,92,246,0.04));border:1px solid rgba(139,92,246,0.25);">
+                            <i class="fas fa-bullhorn" style="color:#8b5cf6;"></i>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span class="tag-badge" style="background:rgba(139,92,246,0.1);color:#8b5cf6;">Activo</span>
+                            <i class="fas fa-chevron-right card-arrow" style="color:#10b981;font-size:11px;"></i>
+                        </div>
+                    </div>
+                    <h3
+                        style="font-size:15px;font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:-.01em;color:#fff;margin:0 0 6px;">
+                        Pitch Master</h3>
+                    <p style="font-size:12px;color:#64748b;line-height:1.6;margin:0 0 20px;flex:1;">Genera pitches
+                        persuasivos y estructurados para cada tipo de prospecto.</p>
+                    <div style="display:flex;gap:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.05);">
+                        <div>
+                            <p
+                                style="font-size:9px;color:#334155;font-weight:800;text-transform:uppercase;margin:0 0 2px;">
+                                Tipo</p>
+                            <p style="font-size:11px;color:#8b5cf6;font-weight:900;margin:0;">Persuasión</p>
+                        </div>
+                        <div>
+                            <p
+                                style="font-size:9px;color:#334155;font-weight:800;text-transform:uppercase;margin:0 0 2px;">
+                                Uso</p>
+                            <p style="font-size:11px;color:#fff;font-weight:900;margin:0;">Apertura</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Outreach Kanban -->
+                <div class="tool-card" onclick="loadTool('outreach-kanban')" id="card-outreach-kanban"
+                    onmouseover="this.style.borderColor='rgba(59,130,246,0.35)';this.style.boxShadow='0 20px 60px -15px rgba(0,0,0,0.6),0 0 30px -10px rgba(59,130,246,0.1)';"
+                    onmouseout="this.style.borderColor='rgba(255,255,255,0.07)';this.style.boxShadow='';">
+                    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;">
+                        <div class="card-icon"
+                            style="width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;background:linear-gradient(135deg,rgba(59,130,246,0.2),rgba(59,130,246,0.04));border:1px solid rgba(59,130,246,0.25);">
+                            <i class="fas fa-columns" style="color:#3b82f6;"></i>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span class="tag-badge" style="background:rgba(59,130,246,0.1);color:#3b82f6;">Activo</span>
+                            <i class="fas fa-chevron-right card-arrow" style="color:#10b981;font-size:11px;"></i>
+                        </div>
+                    </div>
+                    <h3
+                        style="font-size:15px;font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:-.01em;color:#fff;margin:0 0 6px;">
+                        Outreach Kanban</h3>
+                    <p style="font-size:12px;color:#64748b;line-height:1.6;margin:0 0 20px;flex:1;">Tablero de
+                        seguimiento para contactos locales alcanzados por WhatsApp.</p>
+                    <div style="display:flex;gap:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.05);">
+                        <div>
+                            <p
+                                style="font-size:9px;color:#334155;font-weight:800;text-transform:uppercase;margin:0 0 2px;">
+                                Tipo</p>
+                            <p style="font-size:11px;color:#3b82f6;font-weight:900;margin:0;">Kanban</p>
+                        </div>
+                        <div>
+                            <p
+                                style="font-size:9px;color:#334155;font-weight:800;text-transform:uppercase;margin:0 0 2px;">
+                                Uso</p>
+                            <p style="font-size:11px;color:#fff;font-weight:900;margin:0;">Seguimiento</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Outreach Bot -->
+                <div class="tool-card" onclick="loadTool('outreach-bot')" id="card-outreach-bot"
+                    onmouseover="this.style.borderColor='rgba(245,158,11,0.35)';this.style.boxShadow='0 20px 60px -15px rgba(0,0,0,0.6),0 0 30px -10px rgba(245,158,11,0.1)';"
+                    onmouseout="this.style.borderColor='rgba(255,255,255,0.07)';this.style.boxShadow='';">
+                    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;">
+                        <div class="card-icon"
+                            style="width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;background:linear-gradient(135deg,rgba(245,158,11,0.2),rgba(245,158,11,0.04));border:1px solid rgba(245,158,11,0.25);">
+                            <i class="fas fa-robot" style="color:#f59e0b;"></i>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span class="tag-badge" style="background:rgba(245,158,11,0.1);color:#f59e0b;">Activo</span>
+                            <i class="fas fa-chevron-right card-arrow" style="color:#10b981;font-size:11px;"></i>
+                        </div>
+                    </div>
+                    <h3
+                        style="font-size:15px;font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:-.01em;color:#fff;margin:0 0 6px;">
+                        Outreach Bot</h3>
+                    <p style="font-size:12px;color:#64748b;line-height:1.6;margin:0 0 20px;flex:1;">Automatiza el primer
+                        contacto con prospectos locales vía WhatsApp.</p>
+                    <div style="display:flex;gap:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.05);">
+                        <div>
+                            <p
+                                style="font-size:9px;color:#334155;font-weight:800;text-transform:uppercase;margin:0 0 2px;">
+                                Tipo</p>
+                            <p style="font-size:11px;color:#f59e0b;font-weight:900;margin:0;">Automatización</p>
+                        </div>
+                        <div>
+                            <p
+                                style="font-size:9px;color:#334155;font-weight:800;text-transform:uppercase;margin:0 0 2px;">
+                                Uso</p>
+                            <p style="font-size:11px;color:#fff;font-weight:900;margin:0;">Prospección</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin -->
+                <div class="tool-card" onclick="loadTool('admin')" id="card-admin"
+                    style="border-color:rgba(244,63,94,0.1);"
+                    onmouseover="this.style.borderColor='rgba(244,63,94,0.35)';this.style.boxShadow='0 20px 60px -15px rgba(0,0,0,0.6),0 0 30px -10px rgba(244,63,94,0.1)';"
+                    onmouseout="this.style.borderColor='rgba(244,63,94,0.1)';this.style.boxShadow='';">
+                    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;">
+                        <div class="card-icon"
+                            style="width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;background:linear-gradient(135deg,rgba(244,63,94,0.2),rgba(244,63,94,0.04));border:1px solid rgba(244,63,94,0.25);">
+                            <i class="fas fa-satellite-dish" style="color:#f43f5e;"></i>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span class="tag-badge" style="background:rgba(244,63,94,0.1);color:#f43f5e;">
+                                <i class="fas fa-lock" style="font-size:7px;margin-right:2px;"></i>Restringido
+                            </span>
+                            <i class="fas fa-chevron-right card-arrow" style="color:#10b981;font-size:11px;"></i>
+                        </div>
+                    </div>
+                    <h3
+                        style="font-size:15px;font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:-.01em;color:#fff;margin:0 0 6px;">
+                        Torre de Control</h3>
+                    <p style="font-size:12px;color:#64748b;line-height:1.6;margin:0 0 20px;flex:1;">Pipeline de leads en
+                        tiempo real con drag & drop y filtros por fuente.</p>
+                    <div style="display:flex;gap:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.05);">
+                        <div>
+                            <p
+                                style="font-size:9px;color:#334155;font-weight:800;text-transform:uppercase;margin:0 0 2px;">
+                                Tipo</p>
+                            <p style="font-size:11px;color:#f43f5e;font-weight:900;margin:0;">Admin</p>
+                        </div>
+                        <div>
+                            <p
+                                style="font-size:9px;color:#334155;font-weight:800;text-transform:uppercase;margin:0 0 2px;">
+                                Acceso</p>
+                            <p style="font-size:11px;color:#fff;font-weight:900;margin:0;">Firebase Auth</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /grid -->
+
+            <!-- Stats bar -->
+            <div
+                style="max-width:1200px;margin:32px auto 0;background:var(--card-bg);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:18px 24px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <div
+                        style="width:32px;height:32px;background:rgba(16,185,129,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-chart-line" style="color:#10b981;font-size:13px;"></i></div>
+                    <div>
+                        <p
+                            style="font-size:9px;color:#334155;font-weight:800;text-transform:uppercase;letter-spacing:.12em;margin:0;">
+                            Suite Activa</p>
+                        <p style="font-size:12px;color:#fff;font-weight:900;margin:0;">RT360 · Fase 1 & 2</p>
+                    </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:24px;">
+                    <div style="text-align:center;">
+                        <p style="font-size:24px;font-weight:900;color:#10b981;margin:0;">5</p>
+                        <p style="font-size:9px;color:#334155;font-weight:800;text-transform:uppercase;margin:0;">
+                            Herramientas</p>
+                    </div>
+                    <div style="width:1px;height:32px;background:rgba(255,255,255,0.06);"></div>
+                    <div style="text-align:center;">
+                        <p style="font-size:24px;font-weight:900;color:#fff;margin:0;">SPA</p>
+                        <p style="font-size:9px;color:#334155;font-weight:800;text-transform:uppercase;margin:0;">Mode
+                            On</p>
+                    </div>
+                    <div style="width:1px;height:32px;background:rgba(255,255,255,0.06);"></div>
+                    <div style="text-align:center;">
+                        <p style="font-size:24px;font-weight:900;color:#8b5cf6;margin:0;">∞</p>
+                        <p style="font-size:9px;color:#334155;font-weight:800;text-transform:uppercase;margin:0;">
+                            Potencial</p>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /dashboard-view -->
+
+        <!-- ─── IFRAME VIEW ─── -->
+        <div id="iframe-view" style="display:none;position:absolute;inset:0;">
+            <!-- Loading Spinner -->
+            <div id="iframe-loader"
+                style="position:absolute;inset:0;z-index:5;background:var(--brand-slate);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity .3s ease;">
+                <div class="spinner"></div>
+                <p id="loader-text"
+                    style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.2em;color:#334155;margin:0;">
+                    Cargando herramienta...</p>
+            </div>
+            <!-- The Iframe -->
+            <iframe id="tool-iframe" src="" title="Herramienta RT360"
+                style="position:absolute;inset:0;width:100%;height:100%;border:none;" allow="same-origin"
+                onload="onIframeLoad()"></iframe>
+        </div>
+
+    </div><!-- /content-area -->
+
+    <script>
+        // ── Tool metadata ──
+        const TOOLS = {
+            'sales-builder': { file: 'sales-builder.html', label: 'Sales Builder', subtitle: 'Propuestas de Venta', color: '#10b981' },
+            'pitch-master': { file: 'pitch-master.html', label: 'Pitch Master', subtitle: 'Persuasión de Alto Impacto', color: '#8b5cf6' },
+            'outreach-kanban': { file: 'outreach-kanban.html', label: 'Outreach Kanban', subtitle: 'Seguimiento de Contactos', color: '#3b82f6' },
+            'outreach-bot': { file: 'outreach-bot.html', label: 'Outreach Bot', subtitle: 'Automatización de Prospección', color: '#f59e0b' },
+            'admin': { file: 'admin.html', label: 'Torre de Control', subtitle: 'Pipeline de Leads · Firebase Auth', color: '#f43f5e' },
+        };
+
+        let currentTool = null;
+
+        // ── Nav ──
+        function toggleNav() {
+            const nav = document.getElementById('side-nav');
+            const overlay = document.getElementById('nav-overlay');
+            const burger = document.getElementById('burger-btn');
+            const isOpen = nav.classList.contains('open');
+            nav.classList.toggle('open', !isOpen);
+            overlay.classList.toggle('open', !isOpen);
+            burger.classList.toggle('active', !isOpen);
+        }
+
+        function closeNav() {
+            document.getElementById('side-nav').classList.remove('open');
+            document.getElementById('nav-overlay').classList.remove('open');
+            document.getElementById('burger-btn').classList.remove('active');
+        }
+
+        // ── Load Tool ──
+        function loadTool(toolKey) {
+            closeNav();
+            const tool = TOOLS[toolKey];
+            if (!tool) return;
+
+            currentTool = toolKey;
+
+            // Update header
+            document.getElementById('header-title').textContent = tool.label;
+            document.getElementById('header-title').style.color = tool.color;
+            document.getElementById('header-subtitle').textContent = tool.subtitle;
+            document.getElementById('header-back-btn').style.display = 'flex';
+
+            // Show loader
+            const loader = document.getElementById('iframe-loader');
+            const loaderText = document.getElementById('loader-text');
+            loader.style.opacity = '1';
+            loader.style.pointerEvents = 'all';
+            loaderText.textContent = `Cargando ${tool.label}...`;
+
+            // Swap views
+            document.getElementById('dashboard-view').style.display = 'none';
+            const iframeView = document.getElementById('iframe-view');
+            iframeView.style.display = 'block';
+
+            // Load iframe
+            document.getElementById('tool-iframe').src = tool.file;
+
+            // Update nav active state
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            const navEl = document.getElementById('nav-' + toolKey.replace('-', '-'));
+            if (navEl) navEl.classList.add('active');
+
+            // Update page title
+            document.title = `${tool.label} · RT360 Hub`;
+        }
+
+        function onIframeLoad() {
+            const loader = document.getElementById('iframe-loader');
+            loader.style.opacity = '0';
+            loader.style.pointerEvents = 'none';
+        }
+
+        // ── Show Dashboard ──
+        function showDashboard() {
+            closeNav();
+            currentTool = null;
+
+            // Reset header
+            document.getElementById('header-title').textContent = 'Sales Hub';
+            document.getElementById('header-title').style.color = '#10b981';
+            document.getElementById('header-subtitle').textContent = 'RutaTotal 360 · Suite Comercial';
+            document.getElementById('header-back-btn').style.display = 'none';
+
+            // Swap views
+            document.getElementById('iframe-view').style.display = 'none';
+            document.getElementById('dashboard-view').style.display = 'block';
+
+            // Clear iframe src to free memory
+            document.getElementById('tool-iframe').src = '';
+
+            // Reset nav
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.getElementById('nav-hub').classList.add('active');
+
+            // Reset title
+            document.title = 'Sales Hub | RutaTotal 360';
+
+            // Scroll content area to top
+            document.getElementById('content-area').scrollTop = 0;
+        }
+
+        // ── Keyboard shortcut ──
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (document.getElementById('side-nav').classList.contains('open')) {
+                    closeNav();
+                } else if (currentTool) {
+                    showDashboard();
+                }
+            }
+        });
+    </script>
+
+</body>
+
+</html>

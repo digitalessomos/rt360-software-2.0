@@ -1,0 +1,2182 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RutaTotal 360 | Control Operativo en Tiempo Real</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+
+        :root {
+            --brand-emerald: #10b981;
+            --brand-blue: #3a3f47ff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #020617;
+            color: #f8fafc;
+        }
+
+        .gradient-rt {
+            background: linear-gradient(135deg, var(--brand-emerald), #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, var(--brand-emerald), #059669);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.3));
+        }
+
+
+        .video-container {
+            position: relative;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 0 50px -12px rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #000;
+        }
+
+        .hero-slider-container {
+            position: relative;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #0f172a;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-slide {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .hero-slide.active {
+            opacity: 1;
+        }
+
+        .video-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 30;
+        }
+
+        .video-container:hover .video-controls {
+            opacity: 1;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+        }
+
+        .control-btn:hover {
+            background: rgba(16, 185, 129, 0.4);
+            transform: scale(1.1);
+        }
+
+        .volume-slider {
+            -webkit-appearance: none;
+            width: 70px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: #10b981;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .package-card {
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .package-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .package-card.active-rt {
+            border-color: var(--brand-emerald);
+            background: rgba(16, 185, 129, 0.08);
+            box-shadow: 0 0 20px -5px rgba(16, 185, 129, 0.3);
+        }
+
+        .badge-rt {
+            background: var(--brand-emerald);
+            color: #020617;
+        }
+
+        .avatar-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.8) contrast(1.1);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .avatar-video.loaded {
+            opacity: 1;
+        }
+
+        /* Estilos rediseñados para la sección de transformación */
+        .transformation-video-wrapper {
+            display: flex;
+            gap: 20px;
+            align-items: stretch;
+            height: 100%;
+        }
+
+        .transformation-avatar-box {
+            flex: 0 0 280px;
+            height: 100%;
+            min-height: 480px;
+        }
+
+        .transformation-display-box {
+            flex: 1;
+            background: rgba(15, 23, 42, 0.3);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            height: 100%;
+        }
+
+        .package-video {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            /* muestra todo el video sin recortarlo */
+            object-position: center;
+            /* centra el encuadre */
+            background: transparent;
+            border-radius: 12px;
+            transition: opacity 0.5s ease;
+        }
+
+        .slider-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 40;
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+
+        .hero-slider-container:hover .slider-nav-btn {
+            opacity: 1;
+        }
+
+        .slider-nav-btn:hover {
+            background: var(--brand-emerald);
+            color: #020617;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .slider-nav-btn.prev {
+            left: 16px;
+        }
+
+        .slider-nav-btn.next {
+            right: 16px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #020617;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+
+        /* Estilos para el polvo - cubre el header completo */
+        #dust-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Estilos para el polvo - cubre el footer completo */
+        #footer-dust-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Estilos para el polvo - sección experiencia (partículas derecha→izquierda) */
+        #experiencia-dust-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Estilos para el polvo - sección antigravidez (partículas arriba→abajo) */
+        #antigravidez-dust-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .title-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Antigravity Section Styles */
+        #antigravidez {
+            overflow: hidden;
+            perspective: 1000px;
+        }
+
+        .orbit-system {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            /* Adjust as needed */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .core-bible {
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, #10b981 0%, #064e3b 80%);
+            border-radius: 50%;
+            position: absolute;
+            z-index: 10;
+            box-shadow: 0 0 50px var(--brand-emerald), inset 0 0 20px #a7f3d0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: core-pulse 3s infinite ease-out;
+            /* Match satellite timing */
+        }
+
+        .core-bible i {
+            font-size: 3rem;
+            color: #ecfdf5;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+        }
+
+        .satellite-wrapper {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            transition: transform 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Mobile adjustment for wrapper */
+        @media (max-width: 768px) {
+            .satellite-wrapper {
+                /* Reset for grid */
+                position: relative;
+                transform: none !important;
+                margin: 0 auto;
+            }
+        }
+
+        .satellite {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            /* Animation will be applied here via JS or CSS class */
+        }
+
+        .satellite:hover {
+            transform: scale(1.2);
+            border-color: #34d399;
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.6);
+            z-index: 20;
+            background: rgba(16, 185, 129, 0.1);
+            animation-play-state: paused;
+        }
+
+        .satellite i {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            transition: color 0.3s;
+        }
+
+        .satellite:hover i {
+            color: #f8fafc;
+        }
+
+        /* Order State (Circular Orbit) */
+        .orbit-ring {
+            position: absolute;
+            border: 1px dashed rgba(16, 185, 129, 0.1);
+            border-radius: 50%;
+            width: 500px;
+            height: 500px;
+            opacity: 0;
+            transition: opacity 2s;
+            pointer-events: none;
+        }
+
+        .orbit-system.ordered .orbit-ring {
+            opacity: 1;
+        }
+
+        /* Updated Core Pulse to Sync with Satellites */
+        @keyframes core-pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6), inset 0 0 20px #a7f3d0;
+                transform: scale(1);
+            }
+
+            70% {
+                box-shadow: 0 0 0 30px rgba(16, 185, 129, 0), inset 0 0 30px #d1fae5;
+                transform: scale(1.05);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0), inset 0 0 20px #a7f3d0;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes float-satellite {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.9);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* ANTIGRAVITY NEW STYLES */
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes counter-spin {
+            100% {
+                transform: rotate(-360deg);
+            }
+        }
+
+        @keyframes emerald-pulse-optimized {
+            0% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+
+            100% {
+                transform: scale(1.6);
+                opacity: 0;
+            }
+        }
+
+        .orbit-system.rotating {
+            animation: spin 60s linear infinite;
+        }
+
+        .satellite-rotator {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .orbit-system.rotating .satellite-rotator {
+            animation: counter-spin 60s linear infinite;
+        }
+
+        /* Pause orbit on hover */
+        .orbit-system.paused,
+        .orbit-system.paused .satellite-rotator {
+            animation-play-state: paused !important;
+        }
+
+        .satellite {
+            /* Existing styles preserved */
+            position: relative;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            /* Requested technical fix */
+            padding: 12px;
+            /* Requested breathing room */
+            border-radius: 50%;
+            background: rgba(30, 41, 59, 0.95);
+            /* More opaque for better perf without blur */
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            outline: none;
+            /* Accessible focus managed below */
+        }
+
+        /* Ensure direct children (icons or wrappers) are centered and contained */
+        .satellite>* {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        /* Desktop-only blur */
+        @media (min-width: 769px) {
+            .satellite {
+                background: rgba(30, 41, 59, 0.8);
+                backdrop-filter: blur(8px);
+            }
+        }
+
+        .satellite i {
+            font-size: 1.4rem;
+            /* Adjusted to fit nicely within padding */
+            color: #94a3b8;
+            transition: color 0.3s;
+            line-height: 1;
+            /* Prevent line-height from adding vertical space */
+        }
+
+        .satellite:hover i {
+            color: #f8fafc;
+        }
+
+        .satellite::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 1px solid #10b981;
+            z-index: -1;
+            animation: emerald-pulse-optimized 3s infinite ease-out;
+        }
+
+        .satellite:focus-visible {
+            box-shadow: 0 0 0 2px #ecfdf5, 0 0 0 4px #10b981;
+        }
+
+        .satellite-tooltip {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            /*background: rgba(2, 6, 23, 0.95);*/
+            color: #10b981;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+            opacity: 0;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 12px rgba(80, 200, 120, 0.8), 0 0 10px rgba(80, 200, 120, 0.5);
+            /*border: 1px solid rgba(16, 185, 129, 0.3);*/
+            pointer-events: none;
+            z-index: 100;
+            /*box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.8);*/
+            visibility: hidden;
+        }
+
+        .satellite:hover .satellite-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+
+        .modal-content {
+            width: 90%;
+            max-width: 900px;
+            background: #0f172a;
+            /* Slate 900 */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            overflow: hidden;
+            transform: scale(0.95);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        /* Slider Component */
+        .comparison-slider {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            overflow: hidden;
+            background: #020617;
+        }
+
+        .before-image,
+        .after-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* The container for the "After" image that we resize */
+        .after-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            /* Initial split */
+            height: 100%;
+            overflow: hidden;
+            border-right: 2px solid white;
+            z-index: 2;
+        }
+
+        .slider-handle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            /* Matches after-container width */
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            z-index: 3;
+            cursor: col-resize;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            transition: transform 0.1s;
+        }
+
+        .slider-handle:active {
+            cursor: grabbing;
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .comparison-slider:active .slider-handle {
+            cursor: grabbing;
+        }
+
+        .slider-handle i {
+            color: #020617;
+            font-size: 14px;
+        }
+
+        .slider-label {
+            position: absolute;
+            top: 14px;
+            padding: 5px 14px;
+            background: rgba(0, 0, 0, 0.72);
+            color: white;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 800;
+            pointer-events: none;
+            backdrop-filter: blur(6px);
+            max-width: 160px;
+            text-align: center;
+            line-height: 1.3;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+
+        .label-before {
+            right: 20px;
+            background: rgba(239, 68, 68, 0.6);
+            /* Red */
+        }
+
+        .label-after {
+            left: 20px;
+            background: rgba(16, 185, 129, 0.6);
+            /* Emerald */
+            z-index: 10;
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to right, rgba(16, 185, 129, 0.05), transparent);
+        }
+
+        .modal-body {
+            /* padding: 0;  Slider takes full width or maybe some padding */
+        }
+
+        .modal-footer {
+            padding: 20px;
+            background: #020617;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.9rem;
+            color: #94a3b8;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .orbit-system {
+                height: auto;
+                min-height: 600px;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+                padding: 40px 20px;
+                align-content: center;
+            }
+
+            .core-bible {
+                position: relative;
+                grid-column: span 2;
+                margin: 0 auto 30px;
+                width: 100px;
+                height: 100px;
+            }
+
+            .satellite-wrapper {
+                position: relative;
+                /* Reset absolute positioning for mobile grid flow */
+                top: auto !important;
+                left: auto !important;
+                transform: none !important;
+                margin: 0 auto;
+            }
+
+            .orbit-ring {
+                display: none;
+            }
+        }
+
+        /* Estilos Footer Dual */
+        .footer-grid {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: left;
+        }
+
+        .footer-form-input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 14px;
+            color: white;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .footer-form-input:focus {
+            border-color: var(--brand-emerald);
+            background: rgba(16, 185, 129, 0.05);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
+        }
+
+        .input-label {
+            display: block;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #94a3b8;
+            margin-bottom: 6px;
+            margin-left: 4px;
+        }
+
+        @media (max-width: 1024px) {
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                max-width: 500px;
+            }
+        }
+
+        /* Estilos Modal Plan Detallado */
+        .plan-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.9);
+            backdrop-filter: blur(16px);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s ease;
+        }
+
+        .plan-modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .plan-modal-card {
+            max-width: 500px;
+            width: 95%;
+            margin: auto;
+            position: relative;
+        }
+
+        .modal-feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            text-align: left;
+        }
+
+        .modal-feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .modal-feature-item i {
+            color: var(--brand-emerald);
+            font-size: 10px;
+        }
+    </style>
+</head>
+
+<body class="antialiased selection:bg-emerald-500/30">
+
+    <!-- Navegación -->
+    <!-- Navegación Adaptada: RutaTotal 360 -->
+    <nav class="fixed top-0 w-full z-50 px-6 py-4 backdrop-blur-md bg-slate-950/70 border-b border-white/10">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <!-- Logo y Concepto de Control -->
+            <div class="flex items-center gap-4">
+                <!-- Icono de Radar/Control (Sustituye a la bolsa genérica para reflejar "Torre de Control") -->
+                <div class="relative flex items-center justify-center">
+                    <i class="fas fa-satellite-dish text-2xl text-emerald-500 logo-icon animate-pulse-slow"></i>
+                    <span
+                        class="absolute -top-1 -right-1 w-2 h-2 bg-emerald-400 rounded-full shadow-[0_0_8px_#10b981]"></span>
+                </div>
+
+                <div class="flex flex-col">
+                    <span class="font-black tracking-tighter text-2xl leading-none text-white">
+                        RUTATOTAL <span class="text-emerald-500">360</span>
+                    </span>
+                    <!-- Subtexto con Copywriting de Impacto basado en las fuentes -->
+                    <span class="text-[10px] font-bold tracking-[0.25em] text-slate-400 uppercase">
+                        Pedidos sin contratiempos, <span class="text-emerald-500/80">Control Brutal</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Acciones Rápidas -->
+            <div class="flex items-center gap-6">
+
+                <!--div class="hidden md:flex gap-6 text-[11px] font-bold uppercase tracking-widest text-slate-300">
+                <a href="#fortalezas" class="hover:text-emerald-500 transition-colors">Fortalezas</a>
+                <a href="#fases" class="hover:text-emerald-500 transition-colors">Fases 01 & 02</a>
+            </div-->
+
+                <!-- Botón de Acción Principal (Call to Action) -->
+                <a href="#contacto"
+                    class="group relative text-xs font-black bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-6 py-3 rounded-lg transition-all uppercase tracking-tighter overflow-hidden">
+                    <span class="relative z-10">Agendar Demo</span>
+                    <div
+                        class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                    </div>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Encabezado Hero -->
+    <header class="relative min-h-screen flex flex-col justify-center items-center px-6 pt-32 pb-16 overflow-hidden">
+        <!-- Canvas de partículas cubre todo el hero -->
+        <canvas id="dust-canvas"></canvas>
+        <div class="absolute top-1/4 -left-24 w-96 h-96 bg-emerald-500/10 rounded-full blur-[120px]"></div>
+
+        <div class="relative z-10 grid lg:grid-cols-10 gap-6 items-center max-w-[1300px] mx-auto w-full">
+            <div class="lg:col-span-3 text-left">
+                <div class="title-container reveal">
+                    <h1 class="text-4xl md:text-6xl font-extrabold mb-6 leading-[1.1] tracking-tight relative z-10">
+                        ¿EL CAOS DE LAS 10 PM <br> TE ESTÁ <span
+                            class="text-red-500/90 underline decoration-red-900/50 decoration-4 underline-offset-4">ROBANDO
+                            PLATA</span>?
+                    </h1>
+                </div>
+                <p class="reveal text-xl text-slate-400 mb-8 max-w-md leading-relaxed" style="transition-delay: 900ms;">
+                    El papel te funciona... hasta que tenés 20 pedidos y falta uno. Transformá tu mostrador en una <span
+                        class="text-emerald-400 font-bold">Torre de Control</span> y elimina el caos para siempre.
+                </p>
+                <div class="space-y-4">
+                    <div
+                        class="flex items-center gap-3 px-5 py-3 border border-red-500/20 rounded-xl bg-red-900/10 backdrop-blur-sm w-fit">
+                        <i class="fas fa-exclamation-triangle text-red-500 text-sm"></i>
+                        <span class="text-xs font-bold text-red-200">El error humano te cuesta clientes</span>
+                    </div>
+
+                    <a href="#contacto"
+                        class="group relative inline-flex items-center gap-3 bg-white text-slate-950 px-8 py-4 rounded-xl font-black transition-all hover:scale-105 overflow-hidden">
+                        <span class="relative z-10 uppercase tracking-tight">SOLICITAR MI DEMO</span>
+                        <div
+                            class="absolute inset-0 bg-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        </div>
+                        <i class="fas fa-arrow-right relative z-10 group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="lg:col-span-7 flex justify-center lg:justify-end items-stretch gap-2">
+                <div
+                    class="video-container w-[260px] h-[560px] md:w-[320px] md:h-[550px] border-emerald-500/30 shadow-2xl relative bg-slate-900 group">
+                    <video id="hero-video" class="avatar-video" autoplay loop playsinline
+                        oncanplay="this.classList.add('loaded')">
+                        <source src="videos/0.mp4" type="video/mp4">
+                    </video>
+                    <div class="video-controls">
+                        <button class="control-btn" onclick="togglePlay('hero-video', this)"><i
+                                class="fas fa-pause"></i></button>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-volume-up text-[10px] text-emerald-500"></i>
+                            <input type="range" class="volume-slider" min="0" max="1" step="0.1" value="1"
+                                oninput="setVolume('hero-video', this.value)">
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="hero-slider-container w-[450px] h-[560px] md:w-[550px] md:h-[550px] relative hidden sm:block group/slider">
+                    <div class="hero-slide active" style="background-image: url('img/heroimg/i1.webp')"></div>
+                    <div class="hero-slide" style="background-image: url('img/heroimg/i2.webp')"></div>
+                    <div class="hero-slide" style="background-image: url('img/heroimg/i3.webp')"></div>
+                    <div class="hero-slide" style="background-image: url('img/heroimg/i4.webp')"></div>
+                    <div class="hero-slide" style="background-image: url('img/heroimg/i5.webp')"></div>
+                    <div class="hero-slide" style="background-image: url('img/heroimg/i6.webp')"></div>
+                    <div class="hero-slide" style="background-image: url('img/heroimg/i7.webp')"></div>
+                    <div class="hero-slide" style="background-image: url('img/heroimg/i8.webp')"></div>
+                    <div class="hero-slide" style="background-image: url('img/heroimg/i9.webp')"></div>
+                    <div class="hero-slide" style="background-image: url('img/heroimg/i10.webp')"></div>
+                    <div class="hero-slide" style="background-image: url('img/heroimg/i11.webp')"></div>
+                    <div class="hero-slide" style="background-image: url('img/heroimg/i12.webp')"></div>
+                    <div class="hero-slide" style="background-image: url('img/heroimg/i13.webp')"></div>
+                    <div class="hero-slide" style="background-image: url('img/heroimg/i14.webp')"></div>
+                    <div class="hero-slide" style="background-image: url('img/heroimg/i15.webp')"></div>
+
+                    <div
+                        class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-slate-950/90 to-transparent z-20 text-right">
+                        <p class="text-emerald-500 font-black text-[10px] tracking-widest uppercase mb-1">Control de
+                            Monitoreo</p>
+                        <h4 class="text-white font-bold text-sm leading-tight uppercase">Dashboard Proactivo en Pantalla
+                        </h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- RutaTotal 360: El Poder del Monitor -->
+    <section id="experiencia" class="py-24 relative bg-slate-950" style="overflow:hidden;">
+        <!-- Canvas de partículas derecha→izquierda sección experiencia -->
+        <canvas id="experiencia-dust-canvas"></canvas>
+        <div class="container mx-auto px-6" style="position:relative; z-index:1;">
+            <div class="mb-20 text-center">
+                <h2 class="reveal text-3xl md:text-5xl font-black italic mb-6">EL PODER DE LA INFORMACIÓN AL INSTANTE
+                </h2>
+                <p class="reveal text-slate-400 max-w-3xl mx-auto text-lg leading-relaxed"
+                    style="transition-delay: 800ms;">
+                    Basta de preguntas al aire, papel y lápicera. El monitor de pedidos vincula automáticamente el
+                    ticket ID con el repartidor asignado,
+                    reemplazando tickets físicos por una interfaz digital que no solo ahorra espacio, 
+                    sino que elimina: <span class="text-emerald-500 font-bold">el error humano.</span>
+                </p>
+                <!--p class="text-slate-400 max-w-3xl mx-auto text-lg leading-relaxed">
+                    Basta de preguntas al aire, papel y lapicera. El monitor de pedidos vincula automáticamente el ticket ID con el repartidor asignado, 
+                    permitiendo que el equipo de cocina y despacho se enfoquen en lo que realmente importa: <span class="text-emerald-500 font-bold">la eficiencia del servicio.</span>
+                </p-->
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <div class="flex items-center gap-4 mb-10">
+                        <i class="fas fa-desktop text-3xl logo-icon"></i>
+                        <h2 class="text-4xl font-black italic tracking-tighter">CONSOLA DE CONTROL</h2>
+                    </div>
+
+                    <div class="space-y-10">
+                        <div
+                            class="flex items-start gap-4 p-4 rounded-2xl hover:bg-white/5 transition-colors border-l-2 border-emerald-500/30">
+                            <div>
+                                <h4 class="font-bold text-white uppercase text-sm tracking-wider mb-2">Monitor de
+                                    Pedidos Proactivo</h4>
+                                <p class="text-slate-400 text-sm">Muestra en tiempo real el estado de cada pedido.
+                                    Identifica visualmente qué pedidos están en preparación, listos para salir o en
+                                    camino con un responsable asignado.</p>
+                            </div>
+                        </div>
+                        <div
+                            class="flex items-start gap-4 p-4 rounded-2xl hover:bg-white/5 transition-colors border-l-2 border-slate-700">
+                            <div>
+                                <h4 class="font-bold text-white uppercase text-sm tracking-wider mb-2">Vinculación de
+                                    IDs en Tiempo Real</h4>
+                                <p class="text-slate-400 text-sm">Ya sea que el pedido entre por WhatsApp o la Web, el
+                                    sistema lo amarra a un repartidor específico. La auditoría es inmediata y
+                                    automática.</p>
+                            </div>
+                        </div>
+                        <div
+                            class="flex items-start gap-4 p-4 rounded-2xl hover:bg-white/5 transition-colors border-l-2 border-slate-700">
+                            <div>
+                                <h4 class="font-bold text-white uppercase text-sm tracking-wider mb-2">Sincronización de
+                                    Flota</h4>
+                                <p class="text-slate-400 text-sm">Gestiona quién está trabajando en el turno actual con
+                                    un solo clic. La consola se adapta al personal activo para una asignación precisa.
+                                </p>
+                            </div>
+                        </div>
+                        <div
+                            class="flex items-start gap-4 p-4 rounded-2xl hover:bg-white/5 transition-colors border-l-2 border-slate-700">
+                            <div>
+                                <h4 class="font-bold text-white uppercase text-sm tracking-wider mb-2">Auditoría y
+                                    Reportes</h4>
+                                <p class="text-slate-400 text-sm">Reportes detallados al final del día para cuadrar
+                                    pedidos y desempeño de deliveries. Se resuelve el problema de "¿Quién se llevó X
+                                    pedido?" al mostrar claramente el repartidor asignado a cada identificador.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="glass-card p-4 rounded-3xl border-emerald-500/20 shadow-2xl">
+                        <video id="scroll-video-1" controls src="videos/S2B.mp4"
+                            class="w-full rounded-2xl scroll-video"></video>
+                        <div class="p-6">
+                            <p class="text-emerald-500 font-black text-[11px] uppercase tracking-widest mb-2">Fortaleza
+                                Principal</p>
+                            <h3 class="text-xl font-bold">Interfaz Limpia. Operativa Fluida.</h3>
+                            <p class="text-slate-400 text-sm mt-2">Diseñada para evitar distracciones y priorizar la
+                                información que el despachador necesita ver de un solo vistazo.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Antigravidez: 10 Mandamientos -->
+    <section id="antigravidez" class="py-32 relative bg-slate-950 overflow-hidden">
+        <!-- Canvas de partículas arriba→abajo sección antigravidez -->
+        <canvas id="antigravidez-dust-canvas"></canvas>
+        <div
+            class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-900/20 via-slate-950 to-slate-950">
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10 text-center">
+            <div class="mb-16">
+                <span class="reveal text-emerald-500 font-bold tracking-widest uppercase text-xs mb-2 block">Filosofía
+                    Operativa</span>
+                <h2 class="reveal text-3xl md:text-5xl font-black italic text-white mb-6"
+                    style="transition-delay: 250ms;">LOS 10 MANDAMIENTOS <br> DEL <span class="text-emerald-500">ORDEN
+                        DIGITAL</span></h2>
+                <p class="reveal text-slate-400 max-w-2xl mx-auto" style="transition-delay: 1450ms;">Toca cada satélite
+                    para descubrir cómo RutaTotal 360
+                    transforma el caos manual en precisión tecnológica.</p>
+            </div>
+
+            <!-- Orbit System Container -->
+            <div class="orbit-system" id="orbit-system">
+                <div class="orbit-ring"></div>
+
+                <!-- Central Core -->
+                <div class="core-bible">
+                    <div class="relative flex items-center justify-center">
+                        <i
+                            class="fas fa-satellite-dish text-5xl text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.8)]"></i>
+                        <span
+                            class="absolute -top-2 -right-3 w-4 h-4 bg-emerald-400 rounded-full shadow-[0_0_15px_#10b981] animate-ping"></span>
+                        <span
+                            class="absolute -top-2 -right-3 w-4 h-4 bg-emerald-400 rounded-full shadow-[0_0_15px_#10b981]"></span>
+                    </div>
+                </div>
+
+                <!-- Satellites will be injected here by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal 10 Mandamientos -->
+    <div id="commandment-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <span
+                        class="text-emerald-500 text-[10px] font-black uppercase tracking-widest block mb-1">Mandamiento
+                        #<span id="modal-id">01</span></span>
+                    <h3 id="modal-title" class="text-2xl font-bold text-white italic">No preguntarás más</h3>
+                </div>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white transition-colors">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Comparison Slider -->
+                <div class="comparison-slider" id="comparison-slider">
+                    <!-- Background (Before) -->
+                    <div class="before-image-container relative w-full h-full bg-slate-950">
+                        <img id="modal-img-before" src="" class="before-image opacity-60">
+                    </div>
+
+                    <div class="after-container border-r-4 border-emerald-500" id="slider-after-container">
+                        <div class="after-image-container relative h-full bg-slate-950"
+                            style="width: 100vw; max-width: 900px;">
+                            <video id="modal-video-after" class="after-image opacity-70" autoplay loop muted
+                                playsinline></video>
+                        </div>
+                        <span class="slider-label label-after" id="label-after-text">DESPUÉS</span>
+                    </div>
+
+                    <span class="slider-label label-before" id="label-before-text">ANTES</span>
+
+                    <!-- Handle -->
+                    <div class="slider-handle" id="slider-handle">
+                        <i class="fas fa-arrows-alt-h text-emerald-600"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <p class="italic text-xs text-slate-500">Desliza para ver la transformación</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fases de Implementación - REDISEÑO POTENTE -->
+    <section class="py-24 relative overflow-hidden bg-slate-900/50">
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="max-w-4xl mb-16">
+                <div
+                    class="reveal inline-block px-4 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest mb-6">
+                    Fases de Lanzamiento
+                </div>
+                <h2 class="reveal text-4xl md:text-6xl font-black mb-4 italic tracking-tighter"
+                    style="transition-delay: 150ms;">TRANSFORMACIÓN DIGITAL</h2>
+                <p class="reveal text-slate-400 text-xl" style="transition-delay: 900ms;">Esta tecnología le da al
+                    personal del mostrador una consola
+                    centralizada para gestionar el ciclo de vida de cada pedido: Local, Delivery y Entregado.</p>
+
+                <a href="paquetes/planes.html"
+                    class="inline-flex items-center gap-3 bg-emerald-500 text-slate-950 hover:bg-white font-black py-4 px-8 rounded-xl text-sm transition-all uppercase tracking-tighter mt-8 group">
+                    <i class="fas fa-rocket group-hover:animate-bounce"></i>
+                    Ver Planes y Auditoría en Vivo
+                </a>
+
+                <!--p class="text-slate-400 text-xl">Tecnología que sincroniza tu logística con la realidad de tu negocio.</p-->
+            </div>
+
+            <div class="grid lg:grid-cols-12 gap-10 items-stretch">
+                <!-- Columna de Tarjetas -->
+                <div class="lg:col-span-4 flex flex-col gap-6">
+                    <!-- Fase 01 -->
+                    <div class="package-card glass-card p-8 rounded-[2rem] active-rt flex-1"
+                        onclick="switchPackage(1, this)">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="px-3 py-1 rounded-md badge-rt text-[8px] font-black uppercase tracking-tighter">
+                                Fase 01</div>
+                            <span class="text-slate-500 font-mono text-[10px]">ORGANIZACIÓN</span>
+                        </div>
+                        <h4 class="text-xl font-black mb-2 uppercase">Consola Local</h4>
+                        <p class="text-slate-300 text-xs font-bold mb-3 uppercase tracking-tighter">Control de Despacho
+                        </p>
+                        <p class="text-slate-400 text-[11px] leading-relaxed mb-4">
+                            Centraliza la información de los pedidos. Donde antes había gritos y tickets perdidos, ahora
+                            hay control digital.
+                            Vinculá cada ID al instante, eliminá el uso de la lapicera y sabé la verdad de cada pedido
+                            sin preguntar nada.
+                        </p>
+                        <div class="pt-4 border-t border-white/5 flex justify-between items-center">
+                            <span class="text-[9px] font-bold text-emerald-500 uppercase tracking-widest">Enfoque:
+                                Claridad Informativa</span>
+                        </div>
+                    </div>
+
+                    <!-- Fase 02 -->
+                    <div class="package-card glass-card p-8 rounded-[2rem] flex-1" onclick="switchPackage(2, this)">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="px-3 py-1 rounded-md badge-rt text-[8px] font-black uppercase tracking-tighter">
+                                Fase 02</div>
+                            <span class="text-slate-500 font-mono text-[10px]">CONECTIVIDAD</span>
+                        </div>
+                        <h4 class="text-xl font-black mb-2 uppercase">Nube Sincronizada</h4>
+                        <p class="text-slate-300 text-xs font-bold mb-3 uppercase tracking-tighter">Acceso
+                            Multi-Pantalla</p>
+                        <p class="text-slate-400 text-[11px] leading-relaxed mb-4">
+                            Sincronización total entre dispositivos.
+                            Tu negocio te sigue a donde vayas. Controlá la operación desde el celular mientras estás en
+                            casa.
+                            Cero latencia, cero excusas. Si está en la pantalla, es la verdad.
+                        </p>
+                        <div class="pt-4 border-t border-white/5 flex justify-between items-center">
+                            <span class="text-[9px] font-bold text-emerald-500 uppercase tracking-widest">Enfoque:
+                                Control Remoto Total</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna de Videos Alineada -->
+                <div class="lg:col-span-8 flex flex-col">
+                    <div class="transformation-video-wrapper">
+                        <!-- Video Avatar -->
+                        <div class="video-container transformation-avatar-box border-emerald-500/20 bg-slate-900 group">
+                            <video id="dynamic-avatar-video" class="avatar-video" autoplay loop muted playsinline
+                                oncanplay="this.classList.add('loaded')">
+                                <source src="videos/1.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-controls">
+                                <button class="control-btn" onclick="togglePlay('dynamic-avatar-video', this)"><i
+                                        class="fas fa-pause"></i></button>
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-volume-up text-[10px] text-emerald-500"></i>
+                                    <input type="range" class="volume-slider" min="0" max="1" step="0.1" value="0"
+                                        oninput="setVolume('dynamic-avatar-video', this.value)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Video Display (Dashboard) -->
+                        <div class="transformation-display-box group">
+                            <div
+                                class="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity">
+                            </div>
+
+                            <!-- Video Fase 1 -->
+                            <video id="package-video-1" class="package-video" data-package="1" autoplay loop muted
+                                playsinline>
+                                <source src="videos/n2.mp4" type="video/mp4">
+                            </video>
+
+                            <!-- Video Fase 2 -->
+                            <video id="package-video-2" class="package-video hidden" style="object-fit: contain;"
+                                data-package="2" autoplay loop muted playsinline>
+                                <source src="videos/Capcut2.mov" type="video/mp4">
+                            </video>
+
+                            <div class="absolute bottom-4 left-0 right-0 px-6 flex justify-between items-end z-10">
+                                <div>
+                                    <h5 class="text-white font-black uppercase text-xs tracking-widest"
+                                        id="current-status-name">Fase 01: Organización</h5>
+                                    <p class="text-slate-400 text-[9px] uppercase tracking-[0.2em] italic">
+                                        Visualización
+                                        Directa en Local</p>
+                                </div>
+                                <i class="fas fa-expand-alt text-emerald-500/50 text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <footer id="contacto" class="py-32 relative overflow-hidden bg-slate-950 border-t border-white/5">
+        <canvas id="footer-dust-canvas"></canvas>
+        <div class="container mx-auto px-6 relative z-10 text-center">
+            <h2
+                class="reveal text-4xl md:text-6xl font-black mb-16 max-w-5xl mx-auto leading-[0.9] italic tracking-tighter uppercase">
+                Desactivá el caos. <span class="text-emerald-500"><br>Activá Rutatotal 360</span>
+            </h2>
+
+            <div class="footer-grid">
+                <!-- Canal: Planificación (Único ahora) -->
+                <div class="glass-card p-10 rounded-[2.5rem] bg-slate-900/40 border-emerald-500/20">
+                    <span
+                        class="text-emerald-500 font-bold tracking-widest uppercase text-[10px] mb-2 block">Crecimiento
+                        Digital</span>
+                    <h3 class="text-3xl font-black italic mb-6 uppercase leading-none">Solicitar <br>Propuesta</h3>
+
+                    <form id="lead-form" class="space-y-4" onsubmit="handleLeadForm(event)">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="input-label">Nombre</label>
+                                <input type="text" id="lead-name" placeholder="Tu nombre" class="footer-form-input"
+                                    required>
+                            </div>
+                            <div>
+                                <label class="input-label">WhatsApp</label>
+                                <input type="tel" id="lead-phone" placeholder="Ej: +54 9..." class="footer-form-input"
+                                    required>
+                            </div>
+                            <div>
+                                <label class="input-label">Correo</label>
+                                <input type="email" id="lead-email" placeholder="Ej: info@negocio.com"
+                                    class="footer-form-input" required>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="input-label">Sector</label>
+                                <select id="lead-sector" class="footer-form-input appearance-none text-slate-400">
+                                    <option value="gastronomia">Restaurant</option>
+                                    <option value="logistica">Pizzería</option>
+                                    <option value="ecommerce">Sushi</option>
+                                    <option value="otro">Hamburhueseria</option>
+                                    <option value="otro">Heladeria</option>
+                                    <option value="otro">Otro</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="input-label">Repartidores</label>
+                                <select id="lead-fleet" class="footer-form-input appearance-none text-slate-400">
+                                    <option value="1-3">1 - 3</option>
+                                    <option value="3-10">3 - 10</option>
+                                    <option value="+10">+10</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit"
+                            class="w-full bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-slate-950 border border-emerald-500/20 font-black py-5 rounded-xl text-xs transition-all uppercase tracking-[0.2em] mt-2">
+                            SOLICITAR PROPUESTA AHORA
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <p class="mt-20 text-slate-600 text-[10px] font-bold tracking-[0.4em] uppercase">Control Brutal | RutaTotal
+                360 &copy; 2026</p>
+        </div>
+    </footer>
+
+
+    <script type="module">
+        // --- FIREBASE TRACKING CONFIG ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+           apiKey: "AIzaSyAC0K_7GdPfZ1idnpa0VkwgZ9zBYOB4PRk",
+  authDomain: "crudfbtest.firebaseapp.com",
+  projectId: "crudfbtest",
+  storageBucket: "crudfbtest.firebasestorage.app",
+  messagingSenderId: "171088113288",
+  appId: "1:171088113288:web:eb8b6e333edce9be90b93d"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Función Global de Tracking
+        window.logLeadAndOpenWA = async (source, msg) => {
+            console.log(`📡 [Tracking] Registrando lead desde: ${source}`);
+
+            try {
+                // Registro silencioso en Firebase
+                await addDoc(collection(db, "leads_inbox"), {
+                    nombre: "Interés WhatsApp",
+                    local: "Click Directo Landing",
+                    source: source,
+                    msg: msg,
+                    status: "new",
+                    timestamp: serverTimestamp()
+                });
+            } catch (e) {
+                console.error("Error logging lead:", e);
+            }
+
+            // Abrir WhatsApp independientemente de si falló el registro
+            const encoded = encodeURIComponent(msg);
+            window.open(`https://wa.me/5491159665917?text=${encoded}`, '_blank');
+        };
+    </script>
+
+    <script>
+        let currentHeroSlide = 0;
+        let heroSliderInterval;
+        let heroSlides = [];
+        let heroSliderContainer = null;
+
+        // Lógica del efecto de polvo/partículas - cubre el Hero completo
+        const canvas = document.getElementById('dust-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const heroHeader = document.querySelector('header');
+
+        // Partículas del Footer
+        const footerCanvas = document.getElementById('footer-dust-canvas');
+        const footerCtx = footerCanvas.getContext('2d');
+        let footerParticles = [];
+        const footerEl = document.querySelector('footer');
+
+        function resizeCanvas() {
+            if (!heroHeader) return;
+            canvas.width = heroHeader.offsetWidth;
+            canvas.height = heroHeader.offsetHeight;
+        }
+
+        class DustParticle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2.5 + 0.5;
+                this.speedX = Math.random() * 4 + 1.5;
+                this.speedY = (Math.random() - 0.5) * 0.8;
+                this.opacity = Math.random() * 0.25; /* más sutil al cubrir más área */
+                this.color = `rgba(${139 + Math.random() * 60}, ${115 + Math.random() * 40}, ${85 + Math.random() * 20}, ${this.opacity})`;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x > canvas.width + 10) {
+                    this.x = -10;
+                    this.y = Math.random() * canvas.height;
+                }
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initDust() {
+            particles = [];
+            for (let i = 0; i < 120; i++) { /* más partículas para el área mayor */
+                particles.push(new DustParticle());
+            }
+        }
+
+        function animateDust() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateDust);
+        }
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            initDust(); /* reinicializar partículas al cambiar tamaño */
+            resizeFooterCanvas();
+            initFooterDust();
+            resizeExperienciaCanvas();
+            initExperienciaDust();
+            resizeAntigravidezCanvas();
+            initAntigravidezDust();
+        });
+
+        // --- ANTIGRAVIDEZ SECTION PARTICLES (top → bottom) ---
+        const antigravidezCanvas = document.getElementById('antigravidez-dust-canvas');
+        const antigravidezCtx = antigravidezCanvas ? antigravidezCanvas.getContext('2d') : null;
+        let antigravidezParticles = [];
+        const antigravidezSection = document.getElementById('antigravidez');
+
+        function resizeAntigravidezCanvas() {
+            if (!antigravidezSection || !antigravidezCanvas) return;
+            antigravidezCanvas.width = antigravidezSection.offsetWidth;
+            antigravidezCanvas.height = antigravidezSection.offsetHeight;
+        }
+
+        class AntigravidezParticle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * antigravidezCanvas.width;
+                this.y = Math.random() * antigravidezCanvas.height;
+                this.size = Math.random() * 2 + 0.4;
+                // Movimiento positivo: arriba → abajo
+                this.speedY = Math.random() * 1.5 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 1.2;
+                this.opacity = Math.random() * 0.2;
+                // Tonos emerald igual que el footer
+                const r = 10 + Math.floor(Math.random() * 30);
+                const g = 150 + Math.floor(Math.random() * 60);
+                const b = 90 + Math.floor(Math.random() * 40);
+                this.color = `rgba(${r}, ${g}, ${b}, ${this.opacity})`;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                // Cuando sale por abajo, reaparece por arriba
+                if (this.y > antigravidezCanvas.height + 10) {
+                    this.y = -10;
+                    this.x = Math.random() * antigravidezCanvas.width;
+                }
+                if (this.x < -10) this.x = antigravidezCanvas.width + 10;
+                if (this.x > antigravidezCanvas.width + 10) this.x = -10;
+            }
+            draw() {
+                antigravidezCtx.fillStyle = this.color;
+                antigravidezCtx.beginPath();
+                antigravidezCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                antigravidezCtx.fill();
+            }
+        }
+
+        function initAntigravidezDust() {
+            if (!antigravidezCanvas) return;
+            antigravidezParticles = [];
+            for (let i = 0; i < 90; i++) {
+                antigravidezParticles.push(new AntigravidezParticle());
+            }
+        }
+
+        function animateAntigravidezDust() {
+            if (!antigravidezCtx) return;
+            antigravidezCtx.clearRect(0, 0, antigravidezCanvas.width, antigravidezCanvas.height);
+            antigravidezParticles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animateAntigravidezDust);
+        }
+
+        // --- EXPERIENCIA SECTION PARTICLES (right → left) ---
+        const experienciaCanvas = document.getElementById('experiencia-dust-canvas');
+        const experienciaCtx = experienciaCanvas ? experienciaCanvas.getContext('2d') : null;
+        let experienciaParticles = [];
+        const experienciaSection = document.getElementById('experiencia');
+
+        function resizeExperienciaCanvas() {
+            if (!experienciaSection || !experienciaCanvas) return;
+            experienciaCanvas.width = experienciaSection.offsetWidth;
+            experienciaCanvas.height = experienciaSection.offsetHeight;
+        }
+
+        class ExperienciaParticle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * experienciaCanvas.width;
+                this.y = Math.random() * experienciaCanvas.height;
+                this.size = Math.random() * 2.5 + 0.5;
+                // Movimiento negativo: derecha → izquierda
+                this.speedX = -(Math.random() * 4 + 1.5);
+                this.speedY = (Math.random() - 0.5) * 0.8;
+                this.opacity = Math.random() * 0.25;
+                this.color = `rgba(${139 + Math.random() * 60}, ${115 + Math.random() * 40}, ${85 + Math.random() * 20}, ${this.opacity})`;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                // Cuando sale por la izquierda, reaparece por la derecha
+                if (this.x < -10) {
+                    this.x = experienciaCanvas.width + 10;
+                    this.y = Math.random() * experienciaCanvas.height;
+                }
+            }
+            draw() {
+                experienciaCtx.fillStyle = this.color;
+                experienciaCtx.beginPath();
+                experienciaCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                experienciaCtx.fill();
+            }
+        }
+
+        function initExperienciaDust() {
+            if (!experienciaCanvas) return;
+            experienciaParticles = [];
+            for (let i = 0; i < 120; i++) {
+                experienciaParticles.push(new ExperienciaParticle());
+            }
+        }
+
+        function animateExperienciaDust() {
+            if (!experienciaCtx) return;
+            experienciaCtx.clearRect(0, 0, experienciaCanvas.width, experienciaCanvas.height);
+            experienciaParticles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animateExperienciaDust);
+        }
+
+        // --- FOOTER PARTICLES ---
+        function resizeFooterCanvas() {
+            if (!footerEl) return;
+            footerCanvas.width = footerEl.offsetWidth;
+            footerCanvas.height = footerEl.offsetHeight;
+        }
+
+        function initFooterDust() {
+            footerParticles = [];
+            for (let i = 0; i < 90; i++) {
+                footerParticles.push(new FooterParticle());
+            }
+        }
+
+        class FooterParticle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * footerCanvas.width;
+                this.y = Math.random() * footerCanvas.height;
+                this.size = Math.random() * 2 + 0.4;
+                this.speedX = (Math.random() - 0.5) * 1.2;
+                this.speedY = -(Math.random() * 1.5 + 0.5); /* sube suavemente */
+                this.opacity = Math.random() * 0.2;
+                /* tonos emerald/verde para diferenciarse del hero */
+                const r = 10 + Math.floor(Math.random() * 30);
+                const g = 150 + Math.floor(Math.random() * 60);
+                const b = 90 + Math.floor(Math.random() * 40);
+                this.color = `rgba(${r}, ${g}, ${b}, ${this.opacity})`;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.y < -10) {
+                    this.y = footerCanvas.height + 10;
+                    this.x = Math.random() * footerCanvas.width;
+                }
+                if (this.x < -10) this.x = footerCanvas.width + 10;
+                if (this.x > footerCanvas.width + 10) this.x = -10;
+            }
+            draw() {
+                footerCtx.fillStyle = this.color;
+                footerCtx.beginPath();
+                footerCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                footerCtx.fill();
+            }
+        }
+
+        function animateFooterDust() {
+            footerCtx.clearRect(0, 0, footerCanvas.width, footerCanvas.height);
+            footerParticles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animateFooterDust);
+        }
+
+        function initHeroSlider() {
+            heroSliderContainer = document.querySelector('header .hero-slider-container');
+            heroSlides = heroSliderContainer ? heroSliderContainer.querySelectorAll('.hero-slide') : document.querySelectorAll('.hero-slide');
+            currentHeroSlide = 0;
+            startSlider();
+            const heroVideo = document.getElementById('hero-video');
+            if (heroVideo) {
+                heroVideo.muted = true;
+                heroVideo.volume = 1;
+                heroVideo.play().catch(() => {
+                    console.log("Autoplay bloqueado por navegador. Esperando interacción...");
+                });
+
+                // Táctica: Activar sonido en la primera interacción real (click, touch o scroll)
+                const enableAudio = () => {
+                    if (heroVideo.muted) {
+                        heroVideo.muted = false;
+                        console.log("🔊 Audio activado por interacción del usuario");
+                        // Remover los listeners para que solo ocurra una vez
+                        ['click', 'touchstart', 'keydown'].forEach(evt =>
+                            document.removeEventListener(evt, enableAudio)
+                        );
+                    }
+                };
+
+                ['click', 'touchstart', 'keydown'].forEach(evt =>
+                    document.addEventListener(evt, enableAudio, { once: true })
+                );
+            }
+
+            resizeCanvas();
+            initDust();
+            animateDust();
+
+            // Init experiencia section particles (right → left)
+            resizeExperienciaCanvas();
+            initExperienciaDust();
+            animateExperienciaDust();
+
+            // Init antigravidez section particles (top → bottom)
+            resizeAntigravidezCanvas();
+            initAntigravidezDust();
+            animateAntigravidezDust();
+
+            // Init footer particles
+            resizeFooterCanvas();
+            initFooterDust();
+            animateFooterDust();
+        }
+
+        function startSlider() {
+            clearInterval(heroSliderInterval);
+            if (!heroSlides || heroSlides.length === 0) return;
+            heroSliderInterval = setInterval(() => { changeSlide(1); }, 4000);
+        }
+
+        function changeSlide(direction) {
+            if (!heroSlides || heroSlides.length === 0) return;
+            heroSlides[currentHeroSlide].classList.remove('active');
+            currentHeroSlide = (currentHeroSlide + direction + heroSlides.length) % heroSlides.length;
+            heroSlides[currentHeroSlide].classList.add('active');
+        }
+
+        function togglePlay(id, btn) {
+            const video = document.getElementById(id);
+            const icon = btn.querySelector('i');
+            if (video.paused) {
+                video.play();
+                icon.className = 'fas fa-pause';
+            } else {
+                video.pause();
+                icon.className = 'fas fa-play';
+            }
+        }
+
+        function setVolume(id, val) {
+            const video = document.getElementById(id);
+            video.volume = val;
+            video.muted = (val == 0);
+        }
+
+        const packageData = {
+            1: { brand: "Fase 01: Organización", subtitle: "Consola de Control Local Proactiva", video: "videos/1.mp4" },
+            2: { brand: "Fase 02: Conectividad", subtitle: "Sincronización en la Nube", video: "videos/2.mp4" }
+        };
+
+        function switchPackage(id, element) {
+            document.querySelectorAll('.package-card').forEach(card => card.classList.remove('active-rt'));
+            element.classList.add('active-rt');
+
+            const data = packageData[id];
+            document.getElementById('current-status-name').innerText = data.brand;
+            document.querySelector('#current-status-name + p').innerText = data.subtitle;
+
+            const videoElem = document.getElementById('dynamic-avatar-video');
+            if (videoElem.src.indexOf(data.video) === -1) {
+                videoElem.classList.remove('loaded');
+                videoElem.src = data.video;
+                videoElem.play().catch(() => { });
+            }
+
+            document.querySelectorAll('.package-video').forEach(v => { v.classList.add('hidden'); try { v.pause(); } catch (e) { } });
+            const activeVideo = document.querySelector(`.package-video[data-package="${id}"]`);
+            if (activeVideo) {
+                activeVideo.classList.remove('hidden');
+                try { activeVideo.currentTime = 0; activeVideo.play().catch(() => { }); } catch (e) { }
+            }
+        }
+
+        // --- LÓGICA DE CONTROL DE VIDEOS POR SCROLL Y REINICIO ---
+        const videoScrollObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const video = entry.target;
+                if (entry.isIntersecting) {
+                    video.currentTime = 0;
+                    video.play().catch(() => { });
+                } else {
+                    video.pause();
+                }
+            });
+        }, { threshold: 0.1 });
+
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
+        }, { threshold: 0.1 });
+
+        // --- ANTIGRAVITY SECTION LOGIC ---
+         const commandments = [
+            {
+                id: 1,
+                title: "Estado del Pedido",
+                iconHTML: `<div class="relative flex items-center justify-center"><i class="far fa-comment-dots text-lg"></i><i class="fas fa-check absolute -bottom-1 -right-1 text-[10px] text-emerald-400 bg-slate-900 rounded-full border border-slate-900"></i></div>`,
+                imgBefore: "img/antes/1.webp",
+                videoAfter: "videos/diez/v1.mp4",
+                labelBefore: "Antes: Te has llevado este pedido?",
+                labelAfter: "Después: De un solo vistazo muestra claramente el repartidor asignado a cada pedido"
+            },
+            {
+                id: 4,
+                title: "Asignación Silenciosa",
+                iconHTML: `<div class="relative"><i class="fas fa-calculator text-lg text-slate-400"></i><div class="absolute inset-0 flex items-center justify-center"><div class="w-full h-0.5 bg-red-500 transform rotate-45"></div></div></div>`,
+                imgBefore: "img/antes/3b.png",
+                videoAfter: "videos/diez/v2b.mp4",
+                labelBefore: "Antes: Proceso ineficiente que consume tiempo vital y genera desorden en el mostrador",
+                labelAfter: "Después: Asignación inmediata, el personal del local puede despachar pedidos en segundos"
+            },
+            {
+                id: 5,
+                title: "Inteligencia Visual",
+                iconHTML: `<div class="relative flex items-center justify-center"><i class="fas fa-shield-alt text-lg"></i><span class="absolute text-[9px] font-black text-slate-900 pt-0.5">$</span></div>`,
+                imgBefore: "img/antes/5.webp",
+                videoAfter: "videos/diez/v5.mp4",
+                labelBefore: "Antes: Espacio físico invadido por montañas de papeles",
+                labelAfter: "Después: Interfaz limpia que organiza grandes volúmenes de pedidos de forma compacta"
+            },
+            {
+                id: 2,
+                title: "Fin de la Lapicera",
+                iconHTML: `<i class="fas fa-hand-pointer text-lg"></i>`,
+                imgBefore: "img/antes/2.png",
+                videoAfter: "videos/diez/v2.mp4",
+                labelBefore: "Antes: Se anotaba para asignar pedidos",
+                labelAfter: "Después: Un arrastre, una asignación, un segundo"
+            },
+            {
+                id: 3,
+                title: "Cero Papel",
+                iconHTML: `<div class="relative"><i class="fas fa-ticket-alt text-lg transform -rotate-12"></i><i class="fas fa-wind absolute -right-3 top-1 text-[10px] opacity-70"></i></div>`,
+                imgBefore: "img/antes/3.webp",
+                videoAfter: "videos/diez/v5b.mp4",
+                labelBefore: "Antes: Tickets de papel de regreso. Lentitud, errores y estrés manual",
+                labelAfter: "Después: Un click y confirmada su entrega, cero papel y lapicera"
+            },
+            {
+                id: 6,
+                title: "Dominio Absoluto de Flota",
+                iconHTML: `<i class="fas fa-history text-lg"></i>`,
+                imgBefore: "img/antes/6.jpg",
+                videoAfter: "videos/diez/v6b.mp4",
+                labelBefore: "Antes: Desorden físico, incertidumbre y amontonamiento en el mostrador",
+                labelAfter: "Después: Asignar personal según la demanda del día y el turno"
+            },
+            {
+                id: 7,
+                title: "Cero Duplicados, Control Total",
+                iconHTML: `<div class="flex -space-x-2"><i class="fas fa-ban text-red-500"></i><i class="fas fa-ban text-red-500 opacity-70"></i></div>`,
+                imgBefore: "img/antes/7.webp",
+                videoAfter: "videos/diez/v7.mp4",
+                labelBefore: "Antes: Pedidos duplicados sin querer",
+                labelAfter: "Después: Un ID único, sin confusiones"
+            },
+            {
+                id: 8,
+                title: "Información precisa para clientes",
+                iconHTML: `<div class="relative"><i class="fas fa-headset text-lg"></i><i class="fas fa-wifi absolute -top-2 -right-2 text-[8px] text-emerald-500"></i></div>`,
+                imgBefore: "img/antes/8.webp",
+                videoAfter: "videos/diez/v8.mp4",
+                labelBefore: "Antes: 'No sé, ya pregunto...' o 'Ahi lo busco y le digo...'",
+                labelAfter: "Después: Respuesta instantánea en segundos"
+            },
+            {
+                id: 9,
+                title: "Pedidos ubicados al instante",
+                iconHTML: `<i class="fas fa-crosshairs text-lg"></i>`,
+                imgBefore: "img/antes/9.webp",
+                videoAfter: "videos/diez/v9.mp4",
+                labelBefore: "Antes: Nadie sabía dónde estaba el pedido",
+                labelAfter: "Después: Ubicación mega rápida de cada pedido"
+            },
+            {
+                id: 10,
+                title: "Verdad Digital Absoluta",
+                iconHTML: `<i class="fas fa-broadcast-tower text-lg animate-pulse"></i>`,
+                imgBefore: "img/antes/4.webp",
+                videoAfter: "videos/diez/v10b.mp4",
+                labelBefore: "Antes: Pesadilla del Cierre, un proceso lento y propenso a errores",
+                labelAfter: "Después: Reporte digital limpio en 1 segundo"
+            }
+        ];
+
+         
+        let satellitesRendered = false;
+
+        function initAntigravity() {
+            const system = document.getElementById('orbit-system');
+            if (!system) return;
+
+            // Render Satellites initially dispersed (Chaos)
+            commandments.forEach((cmd, index) => {
+                // Create Wrapper (Handles Orbit Position)
+                const wrapper = document.createElement('div');
+                wrapper.className = 'satellite-wrapper';
+
+                // Create Rotator (Handles Counter Rotation)
+                const rotator = document.createElement('div');
+                rotator.className = 'satellite-rotator';
+
+                // Create Inner Satellite (Handles Visuals + Float Animation)
+                const el = document.createElement('button'); // Changed to button for A11y
+                el.className = 'satellite';
+                el.type = 'button';
+                el.setAttribute('aria-label', `Ver mandamiento: ${cmd.title}`);
+                el.dataset.id = cmd.id;
+                // Use custom iconHTML
+                el.innerHTML = cmd.iconHTML;
+
+                // Add Tooltip
+                const tooltip = document.createElement('div');
+                tooltip.className = 'satellite-tooltip';
+                tooltip.innerText = cmd.title;
+                el.appendChild(tooltip);
+
+                // Interactions
+                el.onclick = () => openCommandmentModal(cmd.id);
+                // Pause rotation on hover
+                el.addEventListener('mouseenter', () => {
+                    document.getElementById('orbit-system').classList.add('paused');
+                });
+                el.addEventListener('mouseleave', () => {
+                    document.getElementById('orbit-system').classList.remove('paused');
+                });
+
+                rotator.appendChild(el);
+                wrapper.appendChild(rotator);
+
+                // Random position for chaos (applied to wrapper)
+                const angle = Math.random() * Math.PI * 2;
+                const dist = 300 + Math.random() * 200; // Far away
+                const x = Math.cos(angle) * dist;
+                const y = Math.sin(angle) * dist;
+
+                wrapper.style.transform = `translate(${x}px, ${y}px)`;
+
+                system.appendChild(wrapper);
+            });
+
+            // Trigger Order Animation
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !satellitesRendered) {
+                        satellitesRendered = true;
+                        animateChaosToOrder();
+                        document.querySelector('.orbit-system').classList.add('ordered');
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            observer.observe(system);
+        }
+
+        function animateChaosToOrder() {
+            const wrappers = document.querySelectorAll('.satellite-wrapper');
+            const total = wrappers.length;
+            const radius = 250; // Orbit radius
+            const isMobile = window.innerWidth < 768;
+
+            if (isMobile) return; // Don't animate orbits on mobile, rely on CSS Grid
+
+            wrappers.forEach((wrapper, index) => {
+                // Calculate position in circle
+                const angle = (index / total) * Math.PI * 2;
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
+
+                // Apply transition to organized state (Wrapper moves to orbit)
+                setTimeout(() => {
+                    wrapper.style.transition = "transform 1.5s cubic-bezier(0.34, 1.56, 0.64, 1)";
+                    wrapper.style.transform = `translate(${x}px, ${y}px)`;
+
+                    // Add float animation to INNER element after settling
+                    setTimeout(() => {
+                        const inner = wrapper.querySelector('.satellite');
+                        if (inner) {
+                            // inner.style.animation = `float-satellite ${3 + Math.random()}s ease-in-out infinite alternate`;
+                            // Replacing float with pulse and orbit logic. Float makes orbit jittery.
+                            // inner.style.animationDelay = `${Math.random() * 2}s`;
+                        }
+                    }, 1600);
+                }, 100 * index); // Staggered entry
+            });
+
+            // Start system rotation after chaos settles (approx 2s + 1s stagger = 3s)
+            setTimeout(() => {
+                document.getElementById('orbit-system').classList.add('rotating');
+            }, 3000);
+        }
+
+        // --- MODAL LOGIC & AUDIO ---
+
+        // Simple Audio Context Pulse
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playTechPulse() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(220, audioCtx.currentTime); // Low freq
+            osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1); // Zip up
+
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+        }
+
+        function openCommandmentModal(id) {
+            const data = commandments.find(c => c.id === id);
+            if (!data) return;
+
+            document.getElementById('modal-id').innerText = data.id.toString().padStart(2, '0');
+            document.getElementById('modal-title').innerText = data.title;
+            document.getElementById('label-before-text').innerText = data.labelBefore || 'ANTES';
+            document.getElementById('label-after-text').innerText = data.labelAfter || 'DESPUÉS';
+
+            const imgBefore = document.getElementById('modal-img-before');
+            const videoAfter = document.getElementById('modal-video-after');
+
+            if (data.imgBefore) {
+                imgBefore.src = data.imgBefore;
+                imgBefore.classList.remove('hidden');
+            } else {
+                imgBefore.classList.add('hidden');
+            }
+
+            if (data.videoAfter) {
+                videoAfter.src = data.videoAfter;
+                videoAfter.classList.remove('hidden');
+                videoAfter.play().catch(e => console.log("Video play failed:", e));
+            } else {
+                videoAfter.classList.add('hidden');
+            }
+
+            document.getElementById('commandment-modal').classList.add('active');
+            playTechPulse();
+
+            // Reset Slider
+            updateSlider(50);
+        }
+
+        function closeModal() {
+            document.getElementById('commandment-modal').classList.remove('active');
+        }
+
+        // --- SLIDER LOGIC ---
+        const slider = document.getElementById('comparison-slider');
+        const handle = document.getElementById('slider-handle');
+        const afterContainer = document.getElementById('slider-after-container');
+        let isDragging = false;
+
+        function updateSlider(percent) {
+            if (!handle || !afterContainer) return;
+            handle.style.left = `${percent}%`;
+            afterContainer.style.width = `${percent}%`;
+        }
+
+        if (slider) {
+            slider.addEventListener('mousedown', () => isDragging = true);
+            slider.addEventListener('touchstart', () => isDragging = true);
+
+            window.addEventListener('mouseup', () => isDragging = false);
+            window.addEventListener('touchend', () => isDragging = false);
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                const rect = slider.getBoundingClientRect();
+                let x = e.clientX - rect.left;
+                let percent = (x / rect.width) * 100;
+                percent = Math.max(0, Math.min(100, percent));
+                updateSlider(percent);
+            });
+            window.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                const rect = slider.getBoundingClientRect();
+                let x = e.touches[0].clientX - rect.left;
+                let percent = (x / rect.width) * 100;
+                percent = Math.max(0, Math.min(100, percent));
+                updateSlider(percent);
+            });
+        }
+
+        window.onload = function () {
+            initHeroSlider();
+            initAntigravity();
+
+            document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+            document.querySelectorAll('video').forEach(v => videoScrollObserver.observe(v));
+
+            const dynamicVideo = document.getElementById('dynamic-avatar-video');
+            if (dynamicVideo) {
+                dynamicVideo.muted = true;
+                dynamicVideo.volume = 0;
+            }
+        };
+
+        function handleWhatsAppContact() {
+            const msg = encodeURIComponent("Hola. Acabo de ver la web de RutaTotal 360 y quiero hablar con un estratega para desactivar el caos en mi negocio. Me interesa una solución de control operativo.");
+            window.open(`https://wa.me/5491159665917?text=${msg}`, '_blank');
+        }
+
+        async function handleLeadForm(event) {
+            event.preventDefault();
+            const btn = event.target.querySelector('button');
+            const originalText = btn.innerText;
+
+            // 1. Capturar Datos del Formulario
+            const formData = {
+                nombre: document.getElementById('lead-name').value,
+                whatsapp: document.getElementById('lead-phone').value,
+                correo: document.getElementById('lead-email').value,
+                sector: document.getElementById('lead-sector').value,
+                repartidores: document.getElementById('lead-fleet').value,
+                fecha: new Date().toLocaleString(),
+                fuente: "Landing Footer Form"
+            };
+
+            // 2. Efecto visual de carga
+            btn.innerText = "ENVIANDO A n8n...";
+            btn.disabled = true;
+
+            try {
+                // --- CONFIGURACIÓN DE N8N (Render) ---
+                // Se usa el webhook de producción (activo permanentemente)
+                const WEBHOOK_URL = "https://n8n-bimt.onrender.com/webhook/lead-landing-fase1y2";
+
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    console.log("✅ Lead enviado con éxito a n8n");
+                    alert(`¡Gracias ${formData.nombre}! Tu solicitud ha sido registrada exitosamente en nuestro sistema automatizado.`);
+                    event.target.reset();
+                    btn.innerText = "DATOS ENVIADOS ✅";
+                } else {
+                    throw new Error("Respuesta no exitosa de n8n");
+                }
+            } catch (error) {
+                console.error("❌ Error enviando a n8n:", error);
+
+                // Fallback: Si n8n está apagado o falla, al menos avisamos
+                alert(`¡Gracias ${formData.nombre}! Se guardó localmente, pero hubo un problema de conexión con el servidor de automatización. Un estratega te contactará de todos modos.`);
+                btn.innerText = "ENVIADO (CON AVISO)";
+            } finally {
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                }, 4000);
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torre de Control - Admin | RutaTotal 360</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- SortableJS para el Drag and Drop -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+
+        :root {
+            --brand-emerald: #10b981;
+            --brand-slate: #020617;
+            --card-bg: rgba(30, 41, 59, 0.5);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--brand-slate);
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .pipeline-column {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            min-height: calc(100vh - 200px);
+            transition: background 0.3s;
+        }
+
+        .lead-card {
+            background: rgba(30, 41, 59, 0.8);
+            border-left: 4px solid #475569;
+            transition: all 0.2s ease;
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+        }
+
+        .lead-card:active {
+            cursor: grabbing;
+        }
+
+        /* Estilos de SortableJS */
+        .sortable-ghost {
+            opacity: 0.2;
+            transform: scale(0.95);
+            background: var(--brand-emerald) !important;
+        }
+
+        .sortable-chosen {
+            background: rgba(51, 65, 85, 1) !important;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+            z-index: 50;
+        }
+
+        .lead-card:hover {
+            transform: translateX(4px);
+            background: rgba(51, 65, 85, 0.9);
+        }
+
+        .lead-card.status-new { border-left-color: #3b82f6; }
+        .lead-card.status-contacted { border-left-color: #f59e0b; }
+        .lead-card.status-audit { border-left-color: #8b5cf6; }
+        .lead-card.status-closed { border-left-color: var(--brand-emerald); }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+    </style>
+</head>
+
+<body class="antialiased">
+    <!-- Login Overlay -->
+    <div id="login-overlay" class="fixed inset-0 z-[100] bg-slate-950 flex items-center justify-center p-6">
+        <div class="max-w-md w-full glass-card p-10 rounded-3xl border-emerald-500/20 text-center">
+            <i class="fas fa-shield-alt text-4xl text-emerald-500 mb-6"></i>
+            <h1 class="text-2xl font-black text-white italic tracking-tighter uppercase mb-2">Acceso Restringido</h1>
+            <p class="text-slate-400 text-sm mb-8">Base de Operaciones: Torre de Control</p>
+            <form id="login-form" class="space-y-4">
+                <input type="email" id="login-email" placeholder="Email del Comandante" required
+                    class="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 focus:border-emerald-500 outline-none text-white">
+                <input type="password" id="login-pass" placeholder="CÃ³digo de Acceso" required
+                    class="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 focus:border-emerald-500 outline-none text-white">
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 py-4 rounded-xl font-black uppercase tracking-widest text-sm transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2">
+                    <span id="btn-text">Sincronizar Panel</span>
+                    <i id="btn-spinner" class="fas fa-circle-notch animate-spin hidden"></i>
+                </button>
+            </form>
+            <p class="mt-4 text-[10px] text-slate-600 font-bold uppercase tracking-widest">Credenciales del Proyecto: fase1y2-rutatotal360</p>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="hidden pb-12">
+        <header class="p-6 border-b border-white/5 flex justify-between items-center sticky top-0 bg-slate-950/80 backdrop-blur-md z-50">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center text-slate-950">
+                    <i class="fas fa-satellite"></i>
+                </div>
+                <div>
+                    <h2 class="text-sm font-black uppercase tracking-[.2em] text-emerald-500">Torre de Control 360</h2>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase">Pipeline de Comandantes</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-6">
+                 <!-- Lead Source Filter -->
+                 <div class="flex bg-white/5 p-1 rounded-xl border border-white/5">
+                    <button onclick="setFilter('all')" id="filter-all" class="px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20">
+                        Todos
+                    </button>
+                    <button onclick="setFilter('inbox')" id="filter-inbox" class="px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all text-slate-400 hover:text-white">
+                        Inbox
+                    </button>
+                    <button onclick="setFilter('chatbot')" id="filter-chatbot" class="px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all text-slate-400 hover:text-white">
+                        Chatbot
+                    </button>
+                 </div>
+
+                 <span id="sync-indicator" class="text-[9px] font-black uppercase text-emerald-500/50 flex items-center gap-2">
+                    <i class="fas fa-circle text-[6px] animate-pulse"></i> Tiempo Real Activo
+                 </span>
+                 <button id="logout-btn" class="text-slate-500 hover:text-white transition-colors">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="p-6 max-w-[1600px] mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Column: Nuevos -->
+                <div class="pipeline-column rounded-2xl p-4 flex flex-col gap-4">
+                    <h3 class="text-xs font-black uppercase tracking-widest text-blue-400 flex items-center justify-between">
+                        <span><i class="fas fa-star mr-2"></i> Nuevos</span>
+                        <span id="count-new" class="bg-blue-400/10 px-2 rounded">0</span>
+                    </h3>
+                    <div id="list-new" data-status="new" class="kanban-list flex flex-col gap-3 min-h-[150px]"></div>
+                </div>
+
+                <!-- Column: Contactados -->
+                <div class="pipeline-column rounded-2xl p-4 flex flex-col gap-4">
+                    <h3 class="text-xs font-black uppercase tracking-widest text-amber-400 flex items-center justify-between">
+                        <span><i class="fas fa-paper-plane mr-2"></i> Contactados</span>
+                        <span id="count-contacted" class="bg-amber-400/10 px-2 rounded">0</span>
+                    </h3>
+                    <div id="list-contacted" data-status="contacted" class="kanban-list flex flex-col gap-3 min-h-[150px]"></div>
+                </div>
+
+                <!-- Column: En AuditorÃ­a -->
+                <div class="pipeline-column rounded-2xl p-4 flex flex-col gap-4">
+                    <h3 class="text-xs font-black uppercase tracking-widest text-purple-400 flex items-center justify-between">
+                        <span><i class="fas fa-microscope mr-2"></i> En AuditorÃ­a</span>
+                        <span id="count-audit" class="bg-purple-400/10 px-2 rounded">0</span>
+                    </h3>
+                    <div id="list-audit" data-status="audit" class="kanban-list flex flex-col gap-3 min-h-[150px]"></div>
+                </div>
+
+                <!-- Column: Cerrados/VIP -->
+                <div class="pipeline-column rounded-2xl p-4 flex flex-col gap-4">
+                    <h3 class="text-xs font-black uppercase tracking-widest text-emerald-400 flex items-center justify-between">
+                        <span><i class="fas fa-trophy mr-2"></i> Cerrados / VIP</span>
+                        <span id="count-closed" class="bg-emerald-400/10 px-2 rounded">0</span>
+                    </h3>
+                    <div id="list-closed" data-status="closed" class="kanban-list flex flex-col gap-3 min-h-[150px]"></div>
+                </div>
+            </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Lead Details Modal -->
+    <div id="lead-modal" class="fixed inset-0 z-[110] bg-slate-950/90 backdrop-blur-xl hidden items-center justify-center p-6">
+        <div class="max-w-2xl w-full glass-card p-8 rounded-3xl border-white/5 relative">
+            <button onclick="closeLeadModal()" class="absolute top-6 right-6 text-slate-500 hover:text-white">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <div id="modal-content"></div>
+        </div>
+    </div>
+
+    <!-- Lead Details Modal -->
+
+    <script type="module">
+        import { auth, db } from './src/config/firebase.config.js';
+        import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { leadService } from './src/services/lead.service.js';
+
+        const loginOverlay = document.getElementById('login-overlay');
+        const dashboard = document.getElementById('dashboard');
+        const loginForm = document.getElementById('login-form');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        let sortableInstances = [];
+        let isUpdating = false;
+        let allLeads = [];
+        let allChatSessions = [];
+        let currentFilter = 'all';
+
+        // Forzar Logout si se solicita por URL (?logout=true)
+        if (window.location.search.includes('logout')) {
+            signOut(auth).then(() => {
+                window.history.replaceState({}, document.title, window.location.pathname);
+            });
+        }
+
+        // Check Auth
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log("Comandante detectado:", user.email);
+                loginOverlay.classList.add('hidden');
+                dashboard.classList.remove('hidden');
+                initPipeline();
+            } else {
+                console.log("Esperando autorizaciÃ³n...");
+                loginOverlay.classList.remove('hidden');
+                dashboard.classList.add('hidden');
+            }
+        });
+
+        // Handle Login
+        loginForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-pass').value;
+            const btnText = document.getElementById('btn-text');
+            const spinner = document.getElementById('btn-spinner');
+
+            try {
+                btnText.innerText = "Verificando...";
+                spinner.classList.remove('hidden');
+                await signInWithEmailAndPassword(auth, email, pass);
+            } catch (err) {
+                alert("Error de acceso: Credenciales invÃ¡lidas para este proyecto.");
+                btnText.innerText = "Sincronizar Panel";
+                spinner.classList.add('hidden');
+            }
+        };
+
+        // Handle Logout
+        logoutBtn.onclick = () => signOut(auth);
+
+        window.setFilter = (filter) => {
+            currentFilter = filter;
+            
+            // Update UI
+            ['all', 'inbox', 'chatbot'].forEach(f => {
+                const btn = document.getElementById(`filter-${f}`);
+                if (f === filter) {
+                    btn.className = "px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20";
+                } else {
+                    btn.className = "px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all text-slate-400 hover:text-white";
+                }
+            });
+
+            applyFiltersAndRender();
+        };
+
+        function applyFiltersAndRender() {
+    let filtered = [];
+    if (currentFilter === 'all') {
+        // Combinar leads_inbox y chat_sessions
+        filtered = [
+            ...allLeads,
+            ...allChatSessions.map(session => ({
+                ...session.lead,
+                id: session.id,
+                status: session.lead?.status || 'new',
+                source: 'chatbot_planes',
+                fromChatSession: true,
+                history: session.history || []
+            }))
+        ];
+    } else if (currentFilter === 'inbox') {
+        filtered = allLeads.filter(l => !l.source || l.source !== 'chatbot_planes');
+    } else if (currentFilter === 'chatbot') {
+        filtered = allChatSessions.map(session => ({
+            ...session.lead,
+            id: session.id,
+            status: session.lead?.status || 'new',
+            source: 'chatbot_planes',
+            fromChatSession: true,
+            history: session.history || []
+        }));
+    }
+
+    const groups = { new: [], contacted: [], audit: [], closed: [] };
+    filtered.forEach(l => {
+        const status = l.status || 'new';
+        if (groups[status]) groups[status].push(l);
+    });
+
+    renderColumn('new', groups.new);
+    renderColumn('contacted', groups.contacted);
+    renderColumn('audit', groups.audit);
+    renderColumn('closed', groups.closed);
+
+    // Solo inicializar Sortable una vez o refrescarlo si no hay updates en curso
+    if (sortableInstances.length === 0) {
+        initDragAndDrop();
+    }
+        }
+
+        // Core Pipeline Logic
+        function initPipeline() {
+    leadService.subscribeToLeads((leads) => {
+        allLeads = leads;
+        applyFiltersAndRender();
+    });
+    leadService.subscribeToChats((sessions) => {
+        allChatSessions = sessions;
+        applyFiltersAndRender();
+    });
+        }
+
+        function initDragAndDrop() {
+            const columns = document.querySelectorAll('.kanban-list');
+            columns.forEach(col => {
+                const sortable = new Sortable(col, {
+                    group: 'pipeline',
+                    animation: 150,
+                    ghostClass: 'sortable-ghost',
+                    chosenClass: 'sortable-chosen',
+                    // Importante: No permitir arratrar si ya se estÃ¡ actualizando uno
+                    onEnd: async (evt) => {
+                        const leadId = evt.item.getAttribute('data-id');
+                        const newStatus = evt.to.getAttribute('data-status');
+                        const oldStatus = evt.from.getAttribute('data-status');
+
+                        if (newStatus === oldStatus) return;
+
+                        console.log(`Moviendo lead ${leadId} de ${oldStatus} a ${newStatus}`);
+                        
+                        try {
+                            isUpdating = true;
+                            const res = await leadService.updateLeadStatus(leadId, newStatus);
+                            if (!res.success) throw new Error(res.error);
+                        } catch (err) {
+                            alert("Error al mover la tarjeta: Revisa tus permisos de Firebase.");
+                            // AquÃ­ podrÃ­as recargar la pÃ¡gina para restaurar el estado visual
+                            location.reload();
+                        } finally {
+                            isUpdating = false;
+                        }
+                    }
+                });
+                sortableInstances.push(sortable);
+            });
+        }
+
+        function renderColumn(status, leads) {
+            const container = document.getElementById(`list-${status}`);
+            const counter = document.getElementById(`count-${status}`);
+            counter.innerText = leads.length;
+            
+            // Limpiamos pero preservamos las tarjetas que estÃ¡n siendo arrastradas si fuera necesario
+            // En este caso, el virtual DOM simplificado:
+            container.innerHTML = '';
+
+            leads.forEach(lead => {
+                const card = document.createElement('div');
+                card.className = `lead-card status-${status} p-5 rounded-2xl shadow-lg mb-1`;
+                card.setAttribute('data-id', lead.id);
+                card.innerHTML = `
+                    <div class="flex flex-col gap-1 pointer-events-none">
+                        <span class="text-[10px] text-slate-500 font-black uppercase tracking-widest">${lead.local || 'Sin Local'}</span>
+                        <h4 class="text-sm font-bold text-white">${lead.nombre || 'Interesado AnÃ³nimo'}</h4>
+                        <div class="flex items-center gap-3 mt-3">
+                            <span class="text-[9px] bg-white/5 px-2 py-1 rounded border border-white/5 text-slate-400">
+                                <i class="fas fa-motorcycle mr-1"></i> ${lead.flota || lead.volume || '?'}
+                            </span>
+                            <span class="text-[9px] text-slate-500 font-bold">${new Date(lead.timestamp?.seconds * 1000).toLocaleDateString()}</span>
+                        </div>
+                    </div>
+                `;
+                // El clic para abrir el modal lo manejamos con el contenedor pero evitando interferir con el drag
+                card.addEventListener('click', (e) => {
+                    // Si el usuario simplemente hizo clic, abrimos modal
+                    if (!card.classList.contains('sortable-chosen')) {
+                        openLeadModal(lead);
+                    }
+                });
+                container.appendChild(card);
+            });
+        }
+
+
+
+        window.openLeadModal = (lead) => {
+            const modal = document.getElementById('lead-modal');
+            const content = document.getElementById('modal-content');
+            modal.style.display = 'flex';
+
+            content.innerHTML = `
+                <div class="space-y-6">
+                    <div>
+                        <span class="text-emerald-500 text-[10px] font-black uppercase tracking-widest block mb-1">Información del Comandante</span>
+                        <h3 class="text-3xl font-black text-white italic tracking-tighter uppercase">${lead.nombre}</h3>
+                        <p class="text-slate-400 font-medium">${lead.local} - Flota: ${lead.flota || lead.volume}</p>
+                        <span class="text-[9px] bg-emerald-500/10 text-emerald-500 px-2 py-1 rounded mt-2 inline-block font-black uppercase tracking-widest">Fuente: ${lead.source || 'Directa'}</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                            <span class="text-[10px] text-slate-500 font-bold uppercase block mb-1">Especialidad</span>
+                            <p class="text-sm text-white capitalize">${lead.specialty || 'No especificada'}</p>
+                        </div>
+                        <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                            <span class="text-[10px] text-slate-500 font-bold uppercase block mb-1">Contacto</span>
+                            <p class="text-sm text-white">${lead.contacto || lead.email || 'Email/WA no registrado'}</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <span class="text-[10px] text-slate-500 font-bold uppercase block mb-3">Actualizar Estado</span>
+                        <div class="flex flex-wrap gap-2">
+                            ${['new', 'contacted', 'audit', 'closed'].map(s => `
+                                <button onclick="updateStatusFromModal('${lead.id}', '${s}')" 
+                                    class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all
+                                    ${lead.status === s ? 'bg-emerald-500 text-slate-950 border-emerald-500' : 'bg-white/5 text-slate-400 border-white/10 hover:border-emerald-500'}">
+                                    ${s}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                </div>
+            `;
+        };
+
+        window.closeLeadModal = () => {
+            document.getElementById('lead-modal').style.display = 'none';
+        };
+
+        window.updateStatusFromModal = async (id, status) => {
+            const res = await leadService.updateLeadStatus(id, status);
+            if (res.success) {
+                closeLeadModal();
+            } else {
+                alert("Error al actualizar estado");
+            }
+        };
+    </script>
+</body>
+
+</html>

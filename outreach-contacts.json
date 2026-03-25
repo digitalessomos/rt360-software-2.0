@@ -1,0 +1,22 @@
+[
+    {
+        "id": "outreach_001",
+        "name": "Pizzería La Mamma",
+        "phone": "+54 9 11 1234-5678",
+        "niche": "Pizzería",
+        "city": "San Martín",
+        "status": "contacted",
+        "timestamp": "2026-03-22T00:10:00Z",
+        "last_message": "Pitch inicial enviado vía WhatsApp"
+    },
+    {
+        "id": "outreach_002",
+        "name": "Empanadas Mi Gusto - Devoto",
+        "phone": "+54 11 4503-4318",
+        "niche": "Pizzería",
+        "city": "Villa Devoto",
+        "status": "conversation",
+        "timestamp": "2026-03-21T18:30:00Z",
+        "last_message": "Preguntó por precios de flota"
+    }
+]

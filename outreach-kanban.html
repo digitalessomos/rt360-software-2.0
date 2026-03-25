@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outreach Kanban - RT360</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #0a0b10;
+            --card-bg: #15171f;
+            --accent-primary: #00f2ff;
+            --accent-secondary: #7000ff;
+            --accent-bot: #ff8000;
+            --text-main: #e0e0e0;
+            --text-dim: #a0a0a0;
+            --success: #00ff88;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(112, 0, 255, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(0, 242, 255, 0.05) 0%, transparent 40%);
+        }
+
+        .kanban-column {
+            background: rgba(21, 23, 31, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            min-height: calc(100vh - 180px);
+        }
+
+        .contact-card {
+            background: rgba(30, 32, 45, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-left: 4px solid #4a5568;
+            transition: all 0.2s ease;
+            cursor: grab;
+        }
+
+        .contact-card:hover {
+            transform: translateX(4px);
+            background: rgba(40, 42, 55, 0.9);
+            border-color: var(--accent-bot);
+        }
+
+        .contact-card.status-contacted { border-left-color: var(--accent-bot); }
+        .contact-card.status-conversation { border-left-color: var(--accent-primary); }
+        .contact-card.status-interested { border-left-color: var(--accent-secondary); }
+        .contact-card.status-closed { border-left-color: var(--success); }
+
+        .sortable-ghost {
+            opacity: 0.2;
+            transform: scale(0.95);
+            background: var(--accent-bot) !important;
+        }
+
+        .sortable-chosen {
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+            z-index: 50;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+
+        /* Modal Styles */
+        .glass-card {
+            background: rgba(15, 17, 26, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-overlay {
+            background: rgba(5, 6, 10, 0.85);
+            backdrop-filter: blur(8px);
+        }
+
+        .trigger-message-box {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header -->
+    <header class="p-6 border-b border-white/5 flex justify-between items-center sticky top-0 bg-slate-950/80 backdrop-blur-md z-50">
+        <div class="flex items-center gap-4">
+            <div class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center text-slate-950 font-black">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div>
+                <h2 class="text-sm font-black uppercase tracking-[.2em] text-orange-500">Comandante Outreach</h2>
+                <p class="text-[10px] text-slate-500 font-bold uppercase">Pipeline de Contactos Directos</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-6">
+            <button onclick="syncData()" class="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-white/10 flex items-center gap-2">
+                <i class="fas fa-sync-alt"></i> Sincronizar JSON
+            </button>
+            <a href="outreach-bot.html" class="text-slate-500 hover:text-white transition-colors text-sm">
+                <i class="fas fa-arrow-left mr-2"></i> Volver al Bot
+            </a>
+        </div>
+    </header>
+
+    <main class="p-6 max-w-[1600px] mx-auto mt-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Column 1: Contactados -->
+            <div class="kanban-column p-4 flex flex-col gap-4">
+                <h3 class="text-xs font-black uppercase tracking-widest text-orange-400 flex items-center justify-between">
+                    <span><i class="fas fa-paper-plane mr-2"></i> Contactado</span>
+                    <span id="count-contacted" class="bg-orange-400/10 px-2 rounded">0</span>
+                </h3>
+                <div id="list-contacted" data-status="contacted" class="kanban-list flex flex-col gap-3 min-h-[150px]"></div>
+            </div>
+
+            <!-- Column 2: Conversación -->
+            <div class="kanban-column p-4 flex flex-col gap-4">
+                <h3 class="text-xs font-black uppercase tracking-widest text-cyan-400 flex items-center justify-between">
+                    <span><i class="fas fa-comments mr-2"></i> Conversación</span>
+                    <span id="count-conversation" class="bg-cyan-400/10 px-2 rounded">0</span>
+                </h3>
+                <div id="list-conversation" data-status="conversation" class="kanban-list flex flex-col gap-3 min-h-[150px]"></div>
+            </div>
+
+            <!-- Column 3: Interesado -->
+            <div class="kanban-column p-4 flex flex-col gap-4">
+                <h3 class="text-xs font-black uppercase tracking-widest text-purple-400 flex items-center justify-between">
+                    <span><i class="fas fa-star mr-2"></i> Interesado</span>
+                    <span id="count-interested" class="bg-purple-400/10 px-2 rounded">0</span>
+                </h3>
+                <div id="list-interested" data-status="interested" class="kanban-list flex flex-col gap-3 min-h-[150px]"></div>
+            </div>
+
+            <!-- Column 4: Cierre / VIP -->
+            <div class="kanban-column p-4 flex flex-col gap-4">
+                <h3 class="text-xs font-black uppercase tracking-widest text-emerald-400 flex items-center justify-between">
+                    <span><i class="fas fa-trophy mr-2"></i> Cierre</span>
+                    <span id="count-closed" class="bg-emerald-400/10 px-2 rounded">0</span>
+                </h3>
+                <div id="list-closed" data-status="closed" class="kanban-list flex flex-col gap-3 min-h-[150px]"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Contact Details Modal -->
+    <div id="contact-modal" class="fixed inset-0 z-[110] modal-overlay hidden items-center justify-center p-6">
+        <div class="max-w-2xl w-full glass-card p-8 rounded-3xl relative">
+            <button onclick="closeModal()" class="absolute top-6 right-6 text-slate-500 hover:text-white transition-colors">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <div id="modal-content">
+                <!-- Content will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let contacts = [];
+
+        // 1. Initial Load from JSON and LocalStorage
+        async function loadData() {
+            // Load from JSON file
+            try {
+                const response = await fetch('outreach-contacts.json');
+                const jsonData = await response.json();
+                contacts = jsonData;
+            } catch (err) {
+                console.error("No se pudo cargar outreach-contacts.json, usando solo localStorage", err);
+            }
+
+            // Load from LocalStorage (new contacts from outreach-bot.html)
+            const localStored = localStorage.getItem('rt360_outreach_contacts');
+            if (localStored) {
+                const localContacts = JSON.parse(localStored);
+                // Merge unique by phone/id
+                localContacts.forEach(lc => {
+                    if (!contacts.find(c => c.phone === lc.phone)) {
+                        contacts.push(lc);
+                    }
+                });
+            }
+
+            renderKanban();
+            initDragAndDrop();
+        }
+
+        function renderKanban() {
+            const columns = ['contacted', 'conversation', 'interested', 'closed'];
+            
+            columns.forEach(status => {
+                const list = document.getElementById(`list-${status}`);
+                const count = document.getElementById(`count-${status}`);
+                const items = contacts.filter(c => c.status === status);
+                
+                count.innerText = items.length;
+                list.innerHTML = items.map(contact => `
+                    <div class="contact-card status-${status} p-4 rounded-xl shadow-lg mb-1" data-id="${contact.id}" onclick="openModal('${contact.id}')">
+                        <div class="flex flex-col gap-1 pointer-events-none">
+                            <span class="text-[10px] text-slate-500 font-black uppercase tracking-widest">${contact.niche || 'Nicho Desconocido'}</span>
+                            <h4 class="text-sm font-bold text-white">${contact.name}</h4>
+                            <div class="text-[11px] text-slate-400 mt-1">
+                                <i class="fas fa-phone-alt mr-1"></i> ${contact.phone}
+                            </div>
+                            <div class="flex items-center gap-2 mt-3">
+                                <span class="text-[9px] bg-white/5 px-2 py-1 rounded border border-white/5 text-slate-500">
+                                    ${contact.city || 'S/D'}
+                                </span>
+                                <span class="text-[9px] text-slate-600 font-bold">${new Date(contact.timestamp).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        function initDragAndDrop() {
+            const lists = document.querySelectorAll('.kanban-list');
+            lists.forEach(list => {
+                new Sortable(list, {
+                    group: 'outreach',
+                    animation: 150,
+                    ghostClass: 'sortable-ghost',
+                    chosenClass: 'sortable-chosen',
+                    onEnd: (evt) => {
+                        const id = evt.item.getAttribute('data-id');
+                        const newStatus = evt.to.getAttribute('data-status');
+                        
+                        // Update in memory
+                        const contact = contacts.find(c => c.id == id);
+                        if (contact) {
+                            contact.status = newStatus;
+                            saveToLocal();
+                            renderKanban();
+                        }
+                    }
+                });
+            });
+        }
+
+        function saveToLocal() {
+            localStorage.setItem('rt360_outreach_contacts', JSON.stringify(contacts));
+        }
+
+        function syncData() {
+            // For now, this just saves to localStorage
+            saveToLocal();
+            alert("Datos sincronizados en LocalStorage.");
+        }
+
+        function openModal(id) {
+            const contact = contacts.find(c => c.id == id);
+            if (!contact) return;
+
+            const modal = document.getElementById('contact-modal');
+            const content = document.getElementById('modal-content');
+            modal.style.display = 'flex';
+
+            content.innerHTML = `
+                <div class="space-y-6">
+                    <div>
+                        <span class="text-emerald-500 text-[10px] font-black uppercase tracking-widest block mb-1">Información del Comandante</span>
+                        <h3 class="text-3xl font-black text-white italic tracking-tighter uppercase mb-1">${contact.name}</h3>
+                        <p class="text-slate-400 font-medium text-sm">${contact.city || 'Ubicación no especificada'}</p>
+                        <span class="text-[9px] bg-emerald-500/10 text-emerald-500 px-2 py-1 rounded mt-3 inline-block font-black uppercase tracking-widest border border-emerald-500/20">
+                            Fuente: ${contact.source || 'Outreach Bot'}
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                            <span class="text-[10px] text-slate-500 font-bold uppercase block mb-1">Especialidad</span>
+                            <p class="text-sm text-white capitalize">${contact.niche || 'General'}</p>
+                        </div>
+                        <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                            <span class="text-[10px] text-slate-500 font-bold uppercase block mb-1">Contacto</span>
+                            <p class="text-sm text-white">${contact.phone}</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <span class="text-[10px] text-slate-500 font-bold uppercase block mb-2">Mensaje Disparador (Pitch)</span>
+                        <div class="trigger-message-box">
+                            ${contact.trigger_message || 'No se registró mensaje disparador para este contacto.'}
+                        </div>
+                    </div>
+
+                    <div>
+                        <span class="text-[10px] text-slate-500 font-bold uppercase block mb-3">Actualizar Estado</span>
+                        <div class="flex flex-wrap gap-2">
+                            ${['contacted', 'conversation', 'interested', 'closed'].map(s => `
+                                <button onclick="updateStatusFromModal('${contact.id}', '${s}')" 
+                                    class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all
+                                    ${contact.status === s ? 'bg-orange-500 text-slate-950 border-orange-500' : 'bg-white/5 text-slate-400 border-white/10 hover:border-orange-500'}">
+                                    ${s}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function closeModal() {
+            document.getElementById('contact-modal').style.display = 'none';
+        }
+
+        function updateStatusFromModal(id, status) {
+            const contact = contacts.find(c => c.id == id);
+            if (contact) {
+                contact.status = status;
+                saveToLocal();
+                renderKanban();
+                openModal(id); // Refresh modal content
+            }
+        }
+
+        window.onload = loadData;
+    </script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+Paso 1: La Pregunta del Dolor (El Gancho)
+
+-"¿Qué pasa hoy en tu local cuando un cliente llama enojado porque su pedido no llegó, 
+y vos o tu encargada tienen que gritarle al aire a los repartidores para saber quién se llevó la comida?" 
+
+
+-1. El Gancho (Hook)
+"Deja de gestionar incendios y empieza a liderar tu logística. Si tu cliente tiene que preguntarte '¿dónde está mi pedido?', ya has perdido dinero."
+
+
+1. El Ajuste en el Guion (De Acusación a Alianza)
+En lugar de decir directamente "tus deliveries te mienten", podrías decir:
+
+"¿Alguna vez sentiste que en el mostrador hay una zona gris donde los pedidos desaparecen y nadie se hace responsable? 
+Te mando este video de 10 segundos, decime si te sentís identificado."
+
+Por qué: Aquí el enemigo no es el dueño ni el delivery, el enemigo es el SISTEMA DE PAPEL. Vos y el dueño son aliados contra el papel.
+
+ ……………….   ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….
+ ……………….   ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….
+3. El Pitch de "La Fuga de Dinero" (Para el Dueño)
+Al dueño no le hables de botones, hablále de plata. Usá esta frase:
+
+"Cada vez que un repartidor se lleva un pedido equivocado o un cliente llama y nadie sabe dónde está su comida, 
+estás perdiendo el margen de 3 o 4 pedidos bien entregados. 
+RutaTotal cuesta menos que un error de esos al mes. Se paga solo detectando una sola 'avivada' o un solo error de entrega."
+
+ ……………….   ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….
+ ……………….   ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….
+ ……………….   ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….
+1. El "Video de Contraste" (Tu mejor vendedor 24/7)
+No esperes a estar frente al cliente para explicar el caos. Publicá o enviá por WhatsApp un video corto (15-20 segundos) que divida la pantalla:
+
+Izquierda (Caos): Alguien tachando un cuaderno, un delivery preguntando "¿Cuál es el mío?", y una encargada buscando un ticket bajo la luz de la cocina.
+
+Derecha (Paz): Un plano de tu WebApp, un dedo haciendo drag-and-drop y el estado cambiando a "En Viaje".
+
+Texto final: "Dejá de gritar. Empezá a gestionar. RutaTotal 360."
+ ……………….   ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….
+ ……………….   ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….
+5. Plus Ultra: El "Análisis de Fricción Logística"  -  https://gemini.google.com/gem/308945119440/fe74d4ea89d9a3d6
+
+En lugar de ir y decir "vengo a venderte una app", acércate como un Arquitecto de Soluciones que está haciendo un estudio de mercado.
+
+La propuesta audaz: Crea un PDF de 2 páginas titulado "El Costo Oculto de la Mala Coordinación en Locales de Alto Volumen". Entrégalo a los dueños de esos locales que sabes que tienen +3 repartidores. Diles: "He desarrollado un sistema basado en los cuellos de botella de los locales de Haedo. Noté que aquí manejan un volumen importante y me gustaría mostrarles cómo digitalizar ese caos". Esto te permite entrar al local, observar la operación y vender sin que sospechen que conoces el negocio desde la calle.
+
+***¿Te gustaría que diseñemos juntos los puntos clave de ese PDF o "Dossier de Venta" para que parezca una consultoría de alto nivel?
+
+……………….   ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….
+ ……………….   ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….  ……………….
+
+4. Visión de Ventas: Clasificación de Feedback
+Crítico (Comercial): NUNCA mandes estos mensajes un viernes a la noche. El mejor momento es el martes o miércoles por la mañana,
+ cuando el dueño está tranquilo haciendo pedidos de mercadería y analizando los problemas del finde pasado.
+
+Mejora (UX): Ten a mano un video de 15 segundos grabado desde tu celular usando la App. Ver la fluidez (estilo Apple) en video es lo que cierra la venta en WhatsApp.
+Visión (Estratégica): En el mensaje de WhatsApp, mencionas "la zona". Esto genera sentido de pertenencia y competitividad (si la competencia lo usa, ellos también deben).
+
+5. Plus Ultra: El "Gancho de Urgencia"
+Si te responden con dudas, aplica esta táctica disruptiva: "Solo estoy habilitando 2 locales por zona este mes 
+para asegurar que la implementación sea perfecta y el dueño no tenga que preocuparse por nada. 
+Me gustaría que [Nombre del Local] sea el referente de esta tecnología en el barrio." Esto transforma tu producto de una "opción" a un "privilegio".
