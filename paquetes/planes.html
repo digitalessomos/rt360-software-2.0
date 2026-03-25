@@ -260,8 +260,8 @@
             </button>
             <video id="pills-video" class="w-full h-full rounded-2xl shadow-2xl border border-white/10" playsinline
                 muted loop preload="auto" controls>
-                <source src="../videos/video_chatbot.mov" type="video/mp4">
-                <source src="../videos/video_chatbot.mov">
+                <source src="/videos/video_chatbot.mov" type="video/mp4">
+                <source src="/videos/video_chatbot.mov">
                 Tu navegador no soporta el tag de video.
             </video>
         </div>
@@ -290,9 +290,9 @@
                     class="w-full mt-2 bg-emerald-600 hover:bg-emerald-500 p-2 rounded-lg font-bold transition-all">Siguiente</button>
             </div>
             <script type="module">
-                import { PLANES_CONFIG as planes } from '../src/config/plans.js';
-                import { fireRouter } from '../src/services/firebase.service.js';
-                import { ChatbotCore } from '../src/components/ChatbotCore.js';
+                import { PLANES_CONFIG as planes } from '/src/config/plans.js';
+                import { fireRouter } from '/src/services/firebase.service.js';
+                import { ChatbotCore } from '/src/components/ChatbotCore.js';
 
                 // Inicializar Chatbot
                 const chatbot = new ChatbotCore();
@@ -403,7 +403,7 @@
                 };
             </script>
             <script type="module">
-                import { PLANES_CONFIG as planes } from '../src/config/plans.js';
+                import { PLANES_CONFIG as planes } from '/src/config/plans.js';
 
                 // --- RENDER PLANES ---
                 function renderPlanes() {
